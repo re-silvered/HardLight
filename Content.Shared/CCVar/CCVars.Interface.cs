@@ -88,6 +88,12 @@ public sealed partial class CCVars
         CVarDef.Create("ui.admin_player_tab_role", "Subtype", CVar.CLIENTONLY | CVar.ARCHIVE);
 
     /// <summary>
+    /// If true, entries on the player list will be shown with button-style borders
+    /// </summary>
+    public static readonly CVarDef<bool> AdminPlayerlistButtonStyling =
+        CVarDef.Create("ui.admin_playerlist_button_styling", false, CVar.CLIENTONLY | CVar.ARCHIVE);
+
+    /// <summary>
     /// Determines how antagonist status/roletype is displayed. Based on AdminOverlayAntagSymbolStyles enum
     /// Off: No symbol is shown.
     /// Basic: The same antag symbol is shown for anyone marked as antag.

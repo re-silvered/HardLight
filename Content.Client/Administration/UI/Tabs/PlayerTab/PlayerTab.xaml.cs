@@ -31,6 +31,7 @@ public sealed partial class PlayerTab : Control
     private Header _headerClicked = Header.Username;
     private bool _ascending = true;
     private bool _showDisconnected;
+    private bool _playerlistButtonStyle;
 
     private AdminPlayerTabColorOption _playerTabColorSetting;
     private AdminPlayerTabRoleTypeOption _playerTabRoleSetting;
@@ -51,7 +52,7 @@ public sealed partial class PlayerTab : Control
         _config.OnValueChanged(CCVars.AdminPlayerTabRoleSetting, RoleSettingChanged, true);
         _config.OnValueChanged(CCVars.AdminPlayerTabColorSetting, ColorSettingChanged, true);
         _config.OnValueChanged(CCVars.AdminPlayerTabSymbolSetting, SymbolSettingChanged, true);
-
+        _config.OnValueChanged(CCVars.AdminPlayerlistButtonStyling, PlayerListButtonStylingChanged, true);
 
         OverlayButton.OnPressed += OverlayButtonPressed;
         ShowDisconnectedButton.OnPressed += ShowDisconnectedPressed;
@@ -141,6 +142,16 @@ public sealed partial class PlayerTab : Control
         RefreshPlayerList(_adminSystem.PlayerList);
     }
 
+    private void PlayerListButtonStylingChanged(bool button)
+    {
+        if(button)
+            ListHeader.Margin = new Thickness(15, 0);
+        else
+            ListHeader.Margin = new Thickness(0);
+
+        _playerlistButtonStyle = button;
+    }
+
     private void RefreshPlayerList(IReadOnlyList<PlayerInfo> players)
     {
         _players = players;
@@ -171,7 +182,9 @@ public sealed partial class PlayerTab : Control
             _playerTabSymbolSetting);
         button.AddChild(entry);
         button.ToolTip = $"{player.Username}, {player.CharacterName}, {player.IdentityName}, {player.StartingJob}";
-        button.StyleClasses.Clear();
+
+        if (!_playerlistButtonStyle)
+            button.StyleClasses.Clear();
     }
 
     /// <summary>
