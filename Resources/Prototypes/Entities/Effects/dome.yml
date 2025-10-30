@@ -113,7 +113,7 @@
     color: "#64b9de"
 
 - type: entity
-  id: EnergyDomeHealing #HL, better describes its function  
+  id: EnergyDomeHealing #HL, EnergyDomeSlowing -> EnergyDomeHealing, better describes its function  
   categories: [ HideSpawnMenu ]
   parent: EnergyDomeBase
   components:
