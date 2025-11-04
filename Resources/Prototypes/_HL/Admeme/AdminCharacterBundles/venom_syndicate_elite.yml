@@ -310,15 +310,6 @@
 #    burstFireRate: 100
 #    shotsPerBurst: 3
 
-- type: entity
-  name: self-charging high-capacity power cage
-  id: PowerCageHighSelfCharging
-  parent: PowerCageHigh
-  components:
-  - type: BatterySelfRecharger
-    autoRecharge: true
-    autoRechargeRate: 55
-
 - type: hitscan
   id: SmallXrayLaser
   damage:
@@ -398,6 +389,7 @@
   impactFlash:
     sprite: _Goobstation/Objects/Weapons/Guns/Projectiles/small_laser.rsi
     state: impact_beam_light_overcharged
+
 
 
 
