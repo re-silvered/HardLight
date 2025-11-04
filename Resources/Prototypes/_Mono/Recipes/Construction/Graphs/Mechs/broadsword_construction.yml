@@ -36,7 +36,7 @@
           data: 3
 
       - tag: BroadswordCentralControlModule
-        name: broadsword central control module
+        name: construction-graph-component-broadsword-central
         icon:
           sprite: "Objects/Misc/module.rsi"
           state: "mainboard"
@@ -53,7 +53,7 @@
           data: 5
 
       - tag: BroadswordPeripheralsControlModule
-        name: broadsword peripherals control module
+        name: construction-graph-component-broadsword-peripherals
         icon:
           sprite: "Objects/Misc/module.rsi"
           state: id_mod
@@ -70,7 +70,7 @@
           data: 7
 
       - tag: BroadswordTargetingControlModule
-        name: broadsword weapon control and targeting module
+        name: construction-graph-component-broadsword-weapons
         icon:
           sprite: "Objects/Misc/module.rsi"
           state: mcontroller
@@ -104,7 +104,7 @@
           data: 11
 
       - component: PowerCell
-        name: power cell
+        name: construction-graph-component-power-cell
         store: battery-container
         icon:
           sprite: Objects/Power/power_cells.rsi
@@ -143,7 +143,7 @@
           data: 16
 
       - tag: MechAirTank
-        name: exosuit air tank
+        name: construction-graph-component-exosuit-air-tank
         icon:
           sprite: Objects/Specific/Mech/mecha_equipment.rsi
           state: mecha_air_tank
@@ -152,7 +152,7 @@
         doAfter: 1
 
       - tag: MechThruster
-        name: exosuit thruster
+        name: construction-graph-component-exosuit-thruster
         icon:
           sprite: Objects/Specific/Mech/mecha_equipment.rsi
           state: mecha_bin
