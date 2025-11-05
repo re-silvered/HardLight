@@ -1,3 +1,16 @@
+// SPDX-FileCopyrightText: 2025 Ark
+// SPDX-FileCopyrightText: 2025 Redrover1760
+// SPDX-FileCopyrightText: 2025 RikuTheKiller
+// SPDX-FileCopyrightText: 2025 ScyronX
+// SPDX-FileCopyrightText: 2025 ark1368
+// SPDX-FileCopyrightText: 2025 sleepyyapril
+// SPDX-FileCopyrightText: 2025 starch
+//
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+// Copyright Rane (elijahrane@gmail.com) 2025
+// All rights reserved. Relicensed under AGPL with permission
+
 using Content.Server.Weapons.Ranged.Systems;
 using Content.Shared._Mono.FireControl;
 using Content.Shared.Power;
@@ -8,6 +21,13 @@ using Robust.Shared.Physics.Systems;
 using System.Linq;
 using Content.Shared.Physics;
 using System.Numerics;
+using Content.Server.Power.EntitySystems;
+using Content.Shared.Shuttles.Components;
+using Robust.Shared.Timing;
+using Content.Shared.Interaction;
+using Content.Shared._Mono.ShipGuns;
+using Content.Shared.Examine;
+using Robust.Server.GameObjects;
 
 namespace Content.Server._Mono.FireControl;
 
@@ -16,12 +36,14 @@ public sealed partial class FireControlSystem : EntitySystem
     [Dependency] private readonly SharedTransformSystem _xform = default!;
     [Dependency] private readonly GunSystem _gun = default!;
     [Dependency] private readonly SharedPhysicsSystem _physics = default!;
+    [Dependency] private readonly RotateToFaceSystem _rotateToFace = default!;
 
     public override void Initialize()
     {
         base.Initialize();
         SubscribeLocalEvent<FireControlServerComponent, PowerChangedEvent>(OnPowerChanged);
         SubscribeLocalEvent<FireControlServerComponent, ComponentShutdown>(OnShutdown);
+        SubscribeLocalEvent<FireControlServerComponent, ExaminedEvent>(OnExamined);
 
         SubscribeLocalEvent<FireControllableComponent, PowerChangedEvent>(OnControllablePowerChanged);
         SubscribeLocalEvent<FireControllableComponent, ComponentShutdown>(OnControllableShutdown);
@@ -40,6 +62,20 @@ public sealed partial class FireControlSystem : EntitySystem
     private void OnShutdown(EntityUid uid, FireControlServerComponent component, ComponentShutdown args)
     {
         Disconnect(uid, component);
+    }
+
+    private void OnExamined(EntityUid uid, FireControlServerComponent component, ExaminedEvent args)
+    {
+        if (!args.IsInDetailsRange)
+            return;
+        args.PushMarkup(
+            Loc.GetString(
+                "gunnery-server-examine-detail",
+                ("usedProcessingPower", component.UsedProcessingPower),
+                ("processingPower", component.ProcessingPower),
+                ("valueColor", component.UsedProcessingPower <= component.ProcessingPower - 2 ? "green" : "yellow")
+            )
+        );
     }
 
     private void OnControllablePowerChanged(EntityUid uid, FireControllableComponent component, PowerChangedEvent args)
@@ -96,6 +132,7 @@ public sealed partial class FireControlSystem : EntitySystem
             return;
 
         server.Controlled.Clear();
+        server.UsedProcessingPower = 0;
 
         var query = EntityQueryEnumerator<FireControllableComponent>();
 
@@ -141,6 +178,7 @@ public sealed partial class FireControlSystem : EntitySystem
             return;
 
         controlComp.Controlled.Remove(controllable);
+        controlComp.UsedProcessingPower -= GetProcessingPowerCost(controllable, component);
         component.ControllingServer = null;
     }
 
@@ -151,11 +189,17 @@ public sealed partial class FireControlSystem : EntitySystem
 
         var gridServer = TryGetGridServer(controllable);
 
-        if (gridServer.ServerComponent == null)
+        if (gridServer.ServerUid == null || gridServer.ServerComponent == null)
+            return false;
+
+        var processingPowerCost = GetProcessingPowerCost(controllable, component);
+
+        if (processingPowerCost > GetRemainingProcessingPower(gridServer.ServerUid.Value, gridServer.ServerComponent))
             return false;
 
         if (gridServer.ServerComponent.Controlled.Add(controllable))
         {
+            gridServer.ServerComponent.UsedProcessingPower += processingPowerCost;
             component.ControllingServer = gridServer.ServerUid;
             return true;
         }
@@ -163,6 +207,33 @@ public sealed partial class FireControlSystem : EntitySystem
         {
             return false;
         }
+    }
+
+    public int GetRemainingProcessingPower(EntityUid server, FireControlServerComponent? component = null)
+    {
+        if (!Resolve(server, ref component))
+            return 0;
+
+        return component.ProcessingPower - component.UsedProcessingPower;
+    }
+
+    public int GetProcessingPowerCost(EntityUid controllable, FireControllableComponent? component = null)
+    {
+        if (!Resolve(controllable, ref component))
+            return 0;
+
+        if (!TryComp<ShipGunClassComponent>(controllable, out var classComponent))
+            return 0;
+
+        return classComponent.Class switch
+        {
+            ShipGunClass.Superlight => 1,
+            ShipGunClass.Light => 3,
+            ShipGunClass.Medium => 6,
+            ShipGunClass.Heavy => 9,
+            ShipGunClass.Superheavy => 12,
+            _ => 0,
+        };
     }
 
     private (EntityUid? ServerUid, FireControlServerComponent? ServerComponent) TryGetGridServer(EntityUid uid)
@@ -197,14 +268,36 @@ public sealed partial class FireControlSystem : EntitySystem
             if (!TryComp<GunComponent>(localWeapon, out var gun))
                 continue;
 
-            var weaponXform = Transform(localWeapon);
-            var targetPos = targetCoords.ToMap(EntityManager, _xform);
+            // Get transform once and reuse
+            if (!TryComp<TransformComponent>(localWeapon, out var weaponXform))
+                continue;
 
+            // Rotate weapon towards target if applicable and within same map
+            var currentMapCoords = _xform.GetMapCoordinates(localWeapon, weaponXform);
+            var destinationMapCoords = targetCoords.ToMap(EntityManager, _xform);
+
+            if (destinationMapCoords.MapId == currentMapCoords.MapId && currentMapCoords.MapId != MapId.Nullspace)
+            {
+                var diff = destinationMapCoords.Position - currentMapCoords.Position;
+                if (TryComp<FireControlRotateComponent>(localWeapon, out var _))
+                {
+                    if (diff.LengthSquared() > 0.01f)
+                    {
+                        // Only rotate the gun if it has line of sight to the target
+                        if (HasLineOfSight(localWeapon, currentMapCoords.Position, destinationMapCoords.Position, currentMapCoords.MapId))
+                        {
+                            var goalAngle = Angle.FromWorldVec(diff);
+                            _rotateToFace.TryRotateTo(localWeapon, goalAngle, 0f, Angle.FromDegrees(1), float.MaxValue, weaponXform);
+                        }
+                    }
+                }
+            }
+
+            var targetPos = targetCoords.ToMap(EntityManager, _xform);
             if (targetPos.MapId != weaponXform.MapID)
                 continue;
 
             var weaponPos = _xform.GetWorldPosition(weaponXform);
-
             var direction = (targetPos.Position - weaponPos);
             var distance = direction.Length();
             if (distance <= 0)
@@ -220,6 +313,19 @@ public sealed partial class FireControlSystem : EntitySystem
                 _gun.AttemptShoot(localWeapon, localWeapon, gun, targetCoords);
             }
         }
+    }
+
+    private bool HasLineOfSight(EntityUid shooter, Vector2 from, Vector2 to, MapId mapId)
+    {
+        var diff = to - from;
+        var distance = diff.Length();
+        if (distance <= 0f)
+            return false;
+
+        var direction = Vector2.Normalize(diff);
+        var ray = new CollisionRay(from, direction, collisionMask: (int)(CollisionGroup.Opaque | CollisionGroup.Impassable));
+        var hits = _physics.IntersectRay(mapId, ray, distance, shooter, false);
+        return !hits.Any();
     }
 }
 
