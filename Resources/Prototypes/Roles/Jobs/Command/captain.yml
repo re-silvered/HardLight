@@ -23,23 +23,21 @@
   weight: 20
   startingGear: CaptainGear
   icon: "JobIconCaptain"
-  requireAdminNotify: true
-  joinNotifyCrew: true
-  supervisors: job-supervisors-centcom
-  canBeAntag: false
+# Frontier: commented out below, separate access
+#  requireAdminNotify: true
+#  joinNotifyCrew: true
+#  supervisors: job-supervisors-centcom
+#  canBeAntag: false
   access:
     - Captain # Just making sure in the case of any error that this role cannot be used for any bad doing.
   accessGroups:
   # - AllAccess
     - GeneralAccess
-  special:
-  - !type:AddImplantSpecial
-    implants: [ MindShieldImplant ]
-  - !type:AddComponentSpecial
-    components:
-    - type: CommandStaff
-    - type: PsionicBonusChance #Nyano - Summary: makes it more likely to become psionic.
-      flatBonus: 0.025
+  # special:
+  # - !type:AddComponentSpecial
+  #   components:
+  #   - type: PsionicBonusChance #Nyano - Summary: makes it more likely to become psionic.
+  #     flatBonus: 0.025
 
 - type: startingGear
   id: CaptainGear
