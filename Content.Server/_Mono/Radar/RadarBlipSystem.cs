@@ -112,8 +112,8 @@ public sealed partial class RadarBlipSystem : EntitySystem
                 // Convert RadarBlipShapeNF to RadarBlipShape (they should be compatible enums)
                 var shape = (RadarBlipShape)(int)blip.Shape;
 
-                // Send as NetCoordinates for proper client-side handling
-                var netCoords = GetNetCoordinates(_xform.GetMoverCoordinates(blipUid));
+                // Send entity coordinates directly (not mover coordinates)
+                var netCoords = GetNetCoordinates(blipXform.Coordinates);
                 blips.Add((netCoords, blipVelocity, blip.Scale, blip.RadarColor, shape));
             }
         }
