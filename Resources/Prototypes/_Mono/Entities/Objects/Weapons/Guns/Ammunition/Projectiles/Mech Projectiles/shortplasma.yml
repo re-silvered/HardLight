@@ -10,6 +10,7 @@
         Piercing: 1250
         Structural: 4250
         Heat: 350
+  - type: ShipWeaponProjectile
   - type: ExplodeOnTrigger
   - type: Explosive
     explosionType: HardBomb
