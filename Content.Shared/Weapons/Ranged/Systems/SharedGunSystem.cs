@@ -460,10 +460,10 @@ public abstract partial class SharedGunSystem : EntitySystem
         Projectiles.SetShooter(uid, projectile, user ?? gunUid);
         projectile.Weapon = gunUid;
 
-        // Use the gun's rotation for the projectile direction
-        // This ensures projectiles fire in the direction the gun is facing
-        var gunRotation = TransformSystem.GetWorldRotation(gunUid);
-        TransformSystem.SetWorldRotation(uid, gunRotation + projectile.Angle);
+        // Set the projectile rotation to match the direction it's traveling
+        // This ensures projectiles visually point toward their target
+        var directionAngle = direction.ToAngle();
+        TransformSystem.SetWorldRotation(uid, directionAngle + projectile.Angle);
     }
 
     protected abstract void Popup(string message, EntityUid? uid, EntityUid? user);
