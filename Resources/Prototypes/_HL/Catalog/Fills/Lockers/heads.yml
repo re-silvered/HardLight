@@ -341,6 +341,7 @@
     - id: BoxEncryptionKeySecurity
     - id: CigarGoldCase
       prob: 0.50
+    - id: WeaponEnergyGunMultiphase
     - id: ClothingBeltSecurityFilled
     - id: ClothingEyesGlassesSecurity
     - id: ClothingHeadsetAltSecurity
@@ -365,6 +366,7 @@
     - id: ClothingNeckMantleHOS
     - id: ClothingOuterWinterHoS
     - id: ClothingShoesBootsWinterHoS
+    - id: Bola
     - id: Demag
     - id: HoSIDCard
 

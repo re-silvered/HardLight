@@ -30,11 +30,12 @@
     children:
     - id: FlashlightSeclite
 #    - id: WeaponDisabler # Frontier
-    - id: NFWeaponEnergyPistolDisabler # Frontier
+    - id: WeaponEnergyRevolver # HL
     - id: NFWeaponEnergySubMachineGunDisabler # HL
-    - id: WeaponTaser
+    - id: WeaponEnergyShotgun
     - id: ClothingBeltSecurityFilled
     - id: Flash
+    - id: Bola
     - id: ClothingEyesGlassesSecurity
     - id: ClothingHandsGlovesCombat
     - id: ClothingShoesBootsJack
@@ -83,13 +84,13 @@
     - id: FlashlightSeclite
       prob: 0.8
 #    - id: WeaponDisabler # Frontier
-    - id: NFWeaponEnergyPistolDisabler # Frontier
+    - id: WeaponEnergyRevolver # HL
     - id: NFWeaponEnergySubMachineGunDisabler # HL
-    - id: WeaponTaser
+    - id: Bola
     - id: ClothingUniformJumpsuitSecGrey
       prob: 0.3
     - id: ClothingHeadHelmetBasic
-    - id: ClothingOuterArmorBasic
+    - id: ClothingOuterArmorPlate
     - id: ClothingBeltSecurityFilled
     - id: Flash
       prob: 0.5
@@ -120,10 +121,10 @@
   table: !type:AllSelector
     children:
     - id: ClothingEyesGlassesSecurity
-    - id: WeaponTaser
 #    - id: WeaponDisabler # Frontier
-    - id: NFWeaponEnergyPistolDisabler
+    - id: WeaponEnergyRevolver # HL
     - id: NFWeaponEnergySubMachineGunDisabler # HL
+    - id: Bola
     - id: TrackingImplanter
     - id: TrackingImplanter
 #    - id: ClothingOuterHardsuitBrigmedic # HL: Moved to HLFillHardsuitBrigmedic
@@ -170,6 +171,7 @@
     - id: ClothingEyesGlassesSecurity
       prob: 0.3
     - id: ClothingHeadHatDetGadget
+    - id: WeaponEnergyRevolver # HL
     - id: ClothingNeckTieDet
     - id: ClothingOuterVestDetective
     - id: ClothingOuterCoatDetectiveLoadout
