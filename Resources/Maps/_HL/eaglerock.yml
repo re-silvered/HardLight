@@ -4,8 +4,8 @@ meta:
   engineVersion: 267.3.0
   forkId: ""
   forkVersion: ""
-  time: 11/29/2025 17:11:55
-  entityCount: 21208
+  time: 11/29/2025 18:30:24
+  entityCount: 21209
 maps:
 - 1
 grids:
@@ -7871,7 +7871,7 @@ entities:
       pos: -21.5,45.5
       parent: 2
     - type: Door
-      secondsUntilStateChange: -20204.031
+      secondsUntilStateChange: -20254.953
       state: Opening
     - type: DeviceLinkSource
       lastSignals:
@@ -8622,7 +8622,7 @@ entities:
       pos: -23.5,-12.5
       parent: 2
     - type: Door
-      secondsUntilStateChange: -106518.484
+      secondsUntilStateChange: -106569.41
       state: Opening
     - type: DeviceLinkSource
       lastSignals:
@@ -8634,7 +8634,7 @@ entities:
       pos: -23.5,-13.5
       parent: 2
     - type: Door
-      secondsUntilStateChange: -106708.88
+      secondsUntilStateChange: -106759.805
       state: Opening
     - type: DeviceLinkSource
       lastSignals:
@@ -8667,7 +8667,7 @@ entities:
       pos: -23.5,-1.5
       parent: 2
     - type: Door
-      secondsUntilStateChange: -98347.54
+      secondsUntilStateChange: -98398.46
       state: Opening
     - type: DeviceLinkSource
       lastSignals:
@@ -8752,7 +8752,7 @@ entities:
       pos: 21.5,-13.5
       parent: 2
     - type: Door
-      secondsUntilStateChange: -87737.984
+      secondsUntilStateChange: -87788.91
       state: Opening
     - type: DeviceLinkSource
       lastSignals:
@@ -8798,7 +8798,7 @@ entities:
       pos: 23.5,-5.5
       parent: 2
     - type: Door
-      secondsUntilStateChange: -57708.69
+      secondsUntilStateChange: -57759.613
       state: Opening
     - type: DeviceLinkSource
       lastSignals:
@@ -9032,7 +9032,7 @@ entities:
       pos: 20.5,17.5
       parent: 2
     - type: Door
-      secondsUntilStateChange: -57256.625
+      secondsUntilStateChange: -57307.547
       state: Opening
     - type: DeviceLinkSource
       lastSignals:
@@ -9773,7 +9773,7 @@ entities:
       pos: -23.5,39.5
       parent: 2
     - type: Door
-      secondsUntilStateChange: -14681.769
+      secondsUntilStateChange: -14732.69
       state: Opening
     - type: DeviceLinkSource
       lastSignals:
@@ -57790,7 +57790,7 @@ entities:
     components:
     - type: MetaData
       desc: Gone so soon...
-      name: Llamar plushie
+      name: Lamarr Plush
     - type: Transform
       pos: -42.512768,27.07542
       parent: 2
@@ -113741,6 +113741,13 @@ entities:
     - type: Transform
       rot: -1.5707963267948966 rad
       pos: 10.5,32.5
+      parent: 2
+- proto: PosterContrabandLamarr
+  entities:
+  - uid: 21209
+    components:
+    - type: Transform
+      pos: -41.5,30.5
       parent: 2
 - proto: PosterContrabandUnreadableAnnouncement
   entities:
