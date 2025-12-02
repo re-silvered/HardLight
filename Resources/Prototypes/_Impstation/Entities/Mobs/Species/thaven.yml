@@ -121,10 +121,10 @@
             state: hands
   - type: UserInterface
     interfaces:
-      enum.HumanoidMarkingModifierKey.Key:
-        type: HumanoidMarkingModifierBoundUserInterface
-      enum.StrippingUiKey.Key:
-        type: StrippableBoundUserInterface
+      ##enum.HumanoidMarkingModifierKey.Key:
+      ##  type: HumanoidMarkingModifierBoundUserInterface
+      ##enum.StrippingUiKey.Key:
+      ##  type: StrippableBoundUserInterface
       # Goobstation - changelings
       ##enum.StoreUiKey.Key:
       ##  type: StoreBoundUserInterface
@@ -137,19 +137,20 @@
       ##  type: SpellsBoundUserInterface
       ##  requireInputValidation: false
       # Shitmed
-      enum.SurgeryUIKey.Key:
-        type: SurgeryBui
+      ##enum.SurgeryUIKey.Key:
+      ##  type: SurgeryBui
       enum.ThavenMoodsUiKey.Key: # impstation edit
         type: ThavenMoodsBoundUserInterface
         requireInputValidation: false
 
 
 - type: entity
-  save: false
   parent: BaseSpeciesDummy
   id: MobThavenDummy
   categories: [ HideSpawnMenu ]
   components:
+  - type: HumanoidAppearance
+    species: Thaven
   - type: Sprite
     scale: 1, 1
   - type: Inventory
