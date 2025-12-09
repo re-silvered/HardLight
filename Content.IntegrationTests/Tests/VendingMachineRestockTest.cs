@@ -14,14 +14,15 @@ using Robust.Shared.Map;
 using Robust.Shared.Prototypes;
 
 namespace Content.IntegrationTests.Tests
-{
+{    
     [TestFixture]
     [TestOf(typeof(VendingMachineRestockComponent))]
     [TestOf(typeof(VendingMachineSystem))]
     public sealed class VendingMachineRestockTest : EntitySystem
     {
-        [TestPrototypes]
         private const string Blunt = "Blunt";
+        
+        [TestPrototypes]
         private const string Prototypes = @"
 - type: entity
   name: HumanVendingDummy
