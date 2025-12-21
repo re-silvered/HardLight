@@ -48,6 +48,7 @@
             MedicalDoctor: [ 6, 6 ]
             Paramedic: [ 1, 1 ]
             MedicalIntern: [ 4, 4 ] #intern, not counted
+            Psychologist: [ 1, 1 ]
             #science (5)
             Scientist: [ 5, 5 ]
             ResearchAssistant: [ 6, 6 ] #intern, not counted

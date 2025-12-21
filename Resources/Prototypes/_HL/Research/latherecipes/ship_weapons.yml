@@ -321,8 +321,8 @@
   id: HydraWeaponBoard
   result: HydraWeaponBoard
 
-- type: latheRecipe
-  parent: BaseCapitalWeaponBoardRecipe
-  id: CapitalShieldBoard
-  result: CapitalShieldBoard
+# - type: latheRecipe
+  # parent: BaseCapitalWeaponBoardRecipe
+  # id: CapitalShieldBoard
+  # result: CapitalShieldBoard
 

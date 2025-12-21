@@ -142,6 +142,9 @@
       map: ["enum.PowerDeviceVisualLayers.Powered"]
       visible: false
       color: "#FF9933"
+  - type: Anchorable
+    flags:
+    - Unanchorable 
   - type: Destructible
     thresholds:
     - trigger:
@@ -184,12 +187,12 @@
     radius: 2
     energy: 1.5
     color: "#FF9933"
-  - type: ContainerContainer #HL start
-    containers:
-      machine_board: !type:Container
-      machine_parts: !type:Container
-  - type: Machine
-    board: CapitalShieldBoard #HL end
+  # - type: ContainerContainer #HL start
+    # containers:
+      # machine_board: !type:Container
+      # machine_parts: !type:Container
+  #- type: Machine
+    #board: CapitalShieldBoard #HL end
 
 # TSF capital shield - inbetween POI and MS-500, meant for flyssa
 - type: entity
