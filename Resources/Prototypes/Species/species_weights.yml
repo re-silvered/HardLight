@@ -19,16 +19,6 @@
     Feroxi: 3 # DeltaV - Feroxi, see Prototypes/_DV/Entities/Mobs/Species/feroxi.yml
     Avali: 3
     Resomi: 3
-<<<<<<< HEAD
     Synth: 4
     Chitinid: 3 # DeltaV - Chitinid, see Prototypes/DeltaV/Entities/Mobs/Species/chitinid.yml
     Shadekin: 2
-=======
-<<<<<<< HEAD
-    Synth: 4
-=======
-    Chitinid: 3 # DeltaV - Chitinid, see Prototypes/DeltaV/Entities/Mobs/Species/chitinid.yml
-
-    Shadekin: 2
->>>>>>> upstream/master
->>>>>>> parent of 89200aa7e7 (fixed shit?)
