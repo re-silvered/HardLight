@@ -57,6 +57,7 @@
     - !type:CreateEntityReactionEffect
       entity: FoodSnackNutribrickOpen
 
+- type: reaction
   id: SolidifyBrass
   impact: Low
   quantized: true
