@@ -283,3 +283,11 @@ Entries:
       message: Mech weapons can no longer be fired outside of a mech.
   id: 31
   time: '2026-01-07T06:47:30.0000000+00:00'
+- author: warcrazed11
+  changes:
+    - type: Add
+      message: >-
+        Added the ability to craft big ammo boxes for 3x the price of normal
+        ammo boxes.
+  id: 32
+  time: '2026-01-08T22:52:15.0000000+00:00'
