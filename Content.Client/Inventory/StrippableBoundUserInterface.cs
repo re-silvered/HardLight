@@ -26,6 +26,7 @@ using Robust.Client.UserInterface.Controls;
 using Robust.Shared.Input;
 using Robust.Shared.Map;
 using Robust.Shared.Prototypes;
+using Robust.Shared.Utility;
 using static Content.Client.Inventory.ClientInventorySystem;
 using static Robust.Client.UserInterface.Control;
 using Content.Shared._EE.Strip.Components; // EE
@@ -49,6 +50,15 @@ namespace Content.Client.Inventory
         // Is the BUI in admin view? If in admin view, has custom UI elements to help admins see things
         // (E.g contraband status icon, is the item chameleon etc...)
         private bool _isAdminView = true;
+
+        #region Admin overlay vars
+
+        private readonly ResPath _chameleonClothingTexturePath = new("/Textures/Interface/Default/Slots/camo.png");
+        private readonly ResPath _contrabandTexturePath = new("/Textures/Interface/Default/Slots/contra.png");
+
+        private readonly Color _chameleonColor = new(147, 112, 219);
+
+        #endregion
 
         [ViewVariables]
         private const int ButtonSeparation = 4;
