@@ -176,7 +176,6 @@ namespace Content.Client.Inventory
                 var button = new Button()
                 {
                     Text = Loc.GetString("strippable-bound-user-interface-stripping-menu-ensnare-button"),
-                    StyleClasses = { StyleBase.ButtonOpenRight }
                 };
 
                 button.OnPressed += (_) => SendPredictedMessage(new StrippingEnsnareButtonPressed());
@@ -189,7 +188,6 @@ namespace Content.Client.Inventory
                 var adminButton = new Button()
                 {
                     Text = Loc.GetString("strippable-bound-user-interface-stripping-menu-admin-button"),
-                    StyleClasses = { StyleBase.ButtonOpenRight },
                     ToggleMode = true,
                     Pressed = _isAdminView,
                 };
