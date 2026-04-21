@@ -194,7 +194,12 @@ namespace Content.Client.Inventory
                     Pressed = _isAdminView,
                 };
 
-                adminButton.OnToggled += args => { _isAdminView = !_isAdminView; args.Button.Pressed = _isAdminView; UpdateMenu(); };
+                adminButton.OnToggled += args =>
+                {
+                    _isAdminView = !_isAdminView;
+                    args.Button.Pressed = _isAdminView;
+                    UpdateMenu();
+                };
 
                 _strippingMenu.ButtonContainer.AddChild(adminButton);
             }
