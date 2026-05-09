@@ -97,7 +97,7 @@ namespace Content.Client.Inventory
 
             _virtualHiddenEntity = EntMan.SpawnEntity(HiddenPocketEntityId, MapCoordinates.Nullspace);
 
-            _isAdminView = _cvar.GetCVar(CCVars.AdminStripMenuOverlay);
+            _isAdminView = _cvar.GetCVar(CCVars.AdminStripMenuOverlayDefault);
         }
 
         protected override void Open()
