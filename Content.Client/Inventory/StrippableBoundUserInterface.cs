@@ -7,6 +7,7 @@ using Content.Client.Stylesheets;
 using Content.Client.UserInterface.Controls;
 using Content.Client.UserInterface.Systems.Hands.Controls;
 using Content.Client.Verbs.UI;
+using Content.Shared.CCVar;
 using Content.Shared.Clothing.Components;
 using Content.Shared.Contraband;
 using Content.Shared.Cuffs;
@@ -23,6 +24,7 @@ using Robust.Client.GameObjects;
 using Robust.Client.Player;
 using Robust.Client.UserInterface;
 using Robust.Client.UserInterface.Controls;
+using Robust.Shared.Configuration;
 using Robust.Shared.Input;
 using Robust.Shared.Map;
 using Robust.Shared.Prototypes;
@@ -40,6 +42,7 @@ namespace Content.Client.Inventory
         [Dependency] private readonly IUserInterfaceManager _ui = default!;
         [Dependency] private readonly IClientAdminManager _admin = default!;
         [Dependency] private readonly IPrototypeManager _proto = default!;
+        [Dependency] private readonly IConfigurationManager _cvar = default!;
 
         private readonly ExamineSystem _examine;
         private readonly InventorySystem _inv;
@@ -94,7 +97,7 @@ namespace Content.Client.Inventory
 
             _virtualHiddenEntity = EntMan.SpawnEntity(HiddenPocketEntityId, MapCoordinates.Nullspace);
 
-            _isAdminView = _admin.IsAdmin();
+            _isAdminView = _cvar.GetCVar(CCVars.AdminStripMenuOverlay);
         }
 
         protected override void Open()
