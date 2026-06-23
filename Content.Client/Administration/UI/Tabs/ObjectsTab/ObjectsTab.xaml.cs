@@ -76,13 +76,8 @@ public sealed partial class ObjectsTab : Control
                 }
             case ObjectsTabSelection.Stations:
                 {
-                    // teleport to the station's largest grid, not to the station entity (which is in nullspace)
-                    if (!_entityManager.TryGetEntity(nent, out var station))
-                        break;
-                    var largestGrid = _entityManager.EntitySysManager.GetEntitySystem<StationSystem>().GetLargestGrid(station.Value);
-                    if (largestGrid == null)
-                        break;
-                    _console.ExecuteCommand($"tpto {largestGrid.Value}");
+                    // This client only receives station entities, not the station's grid list.
+                    _console.ExecuteCommand($"tpto {nent}");
                     break;
                 }
             default:
