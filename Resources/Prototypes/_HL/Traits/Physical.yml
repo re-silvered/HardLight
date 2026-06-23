@@ -138,6 +138,7 @@
   description: natural-regen-text
   category: Physical
   cost: 6
+  replaceComponents: true
   speciesBlacklist:
   - IPC
   - Synth
@@ -165,6 +166,7 @@
   description: unnatural-regen-text
   category: Physical
   cost: 8
+  replaceComponents: true
   speciesBlacklist:
   - IPC
   - Synth

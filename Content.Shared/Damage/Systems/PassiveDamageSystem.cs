@@ -20,7 +20,7 @@ public sealed class PassiveDamageSystem : EntitySystem
 
     private void OnPendingMapInit(EntityUid uid, PassiveDamageComponent component, MapInitEvent args)
     {
-        component.NextDamage = _timing.CurTime + TimeSpan.FromSeconds(1f);
+        component.NextDamage = _timing.CurTime + GetInterval(component);
     }
 
     // Every tick, attempt to damage entities
@@ -37,11 +37,11 @@ public sealed class PassiveDamageSystem : EntitySystem
             if (comp.NextDamage > curTime)
                 continue;
 
-            if (comp.DamageCap != 0 && damage.TotalDamage >= comp.DamageCap)
+            if (comp.DamageCap != 0 && comp.Damage.AnyPositive() && damage.TotalDamage >= comp.DamageCap)
                 continue;
 
             // Set the next time they can take damage
-            comp.NextDamage = curTime + TimeSpan.FromSeconds(1f);
+            comp.NextDamage = curTime + GetInterval(comp);
 
             // Damage them
             foreach (var allowedState in comp.AllowedStates)
@@ -50,5 +50,10 @@ public sealed class PassiveDamageSystem : EntitySystem
                     _damageable.TryChangeDamage(uid, comp.Damage, true, false, damage);
             }
         }
+    }
+
+    private static TimeSpan GetInterval(PassiveDamageComponent component)
+    {
+        return TimeSpan.FromSeconds(Math.Max(0.1f, component.Interval));
     }
 }
