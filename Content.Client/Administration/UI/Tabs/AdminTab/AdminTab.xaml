@@ -20,10 +20,8 @@
             <BoxContainer Orientation="Vertical" SeparationOverride="6" Margin="6">
                 <Label Text="{Loc admin-tools-section-quick-desc}" StyleClasses="LabelSubText" />
                 <GridContainer Columns="4" HorizontalExpand="True">
-                    <cc:UICommandButton Command="kick" Text="{Loc admin-player-actions-window-title}" WindowType="{x:Type at:PlayerActionsWindow}" />
                     <cc:CommandButton Command="banpanel" Text="{Loc admin-player-actions-window-ban}" />
                     <cc:CommandButton Command="aghost" Text="{Loc admin-player-actions-window-admin-ghost}" />
-                    <cc:UICommandButton Command="tpto" Text="{Loc admin-player-actions-window-teleport}" WindowType="{x:Type at:TeleportWindow}" />
                     <cc:CommandButton Command="permissions" Text="{Loc admin-player-actions-window-permissions}" />
                     <cc:CommandButton Command="announceui" Text="{Loc admin-player-actions-window-announce}" />
                     <cc:UICommandButton Command="callshuttle" Text="{Loc admin-player-actions-window-shuttle}" WindowType="{x:Type at:AdminShuttleWindow}" />
