@@ -4,10 +4,10 @@ using Content.Server.Administration.UI;
 using Content.Server.Disposal.Tube;
 using Content.Server.EUI;
 using Content.Server.Ghost.Roles;
+using Content.Server.HL.Administration;
 using Content.Server.Mind;
-using Content.Server.Prayer;
 using Content.Server.Station.Systems;
-using Content.Server.Traits; // HardLight
+using Content.Server.Traits; // hardlight
 using Content.Shared.Administration;
 using Content.Shared.Chemistry.Components.SolutionManager;
 using Content.Shared.Chemistry.EntitySystems;
@@ -55,14 +55,13 @@ namespace Content.Server.Administration.Systems
         [Dependency] private readonly EuiManager _euiManager = default!;
         [Dependency] private readonly GhostRoleSystem _ghostRoleSystem = default!;
         [Dependency] private readonly UserInterfaceSystem _uiSystem = default!;
-        [Dependency] private readonly PrayerSystem _prayerSystem = default!;
         [Dependency] private readonly MindSystem _mindSystem = default!;
         [Dependency] private readonly ToolshedManager _toolshed = default!;
         [Dependency] private readonly RejuvenateSystem _rejuvenate = default!;
         [Dependency] private readonly SharedPopupSystem _popup = default!;
         [Dependency] private readonly StationSystem _stations = default!;
         [Dependency] private readonly StationSpawningSystem _spawning = default!;
-        [Dependency] private readonly TraitSystem _traits = default!; // HardLight
+        [Dependency] private readonly TraitSystem _traits = default!; // hardlight
         [Dependency] private readonly ExamineSystemShared _examine = default!;
         [Dependency] private readonly AdminFrozenSystem _freeze = default!;
         [Dependency] private readonly IPlayerManager _playerManager = default!;
@@ -115,37 +114,18 @@ namespace Content.Server.Administration.Systems
                     verb.Impact = LogImpact.Low;
                     args.Verbs.Add(verb);
 
-                    // Subtle Messages
+                    // hardlight
                     Verb prayerVerb = new();
                     prayerVerb.Text = Loc.GetString("prayer-verbs-subtle-message");
                     prayerVerb.Category = VerbCategory.Admin;
                     prayerVerb.Icon = new SpriteSpecifier.Texture(new("/Textures/Interface/pray.svg.png"));
                     prayerVerb.Act = () =>
                     {
-                        _quickDialog.OpenDialog(player, "Subtle Message", "Message", "Popup Message", (string message, string popupMessage) =>
-                        {
-                            _prayerSystem.SendSubtleMessage(targetActor.PlayerSession, player, message, popupMessage == "" ? Loc.GetString("prayer-popup-subtle-default") : popupMessage);
-                        });
+                        var coordinates = Transform(args.Target).Coordinates;
+                        _euiManager.OpenEui(new SubtleMessageEui(targetActor.PlayerSession, coordinates), player);
                     };
                     prayerVerb.Impact = LogImpact.Low;
                     args.Verbs.Add(prayerVerb);
-
-                    // Subtle Cryptic Messages
-                    Verb crypticVerb = new();
-                    crypticVerb.Text = Loc.GetString("prayer-verbs-subtle-cryptic-message");
-                    crypticVerb.Category = VerbCategory.Admin;
-                    crypticVerb.Icon = new SpriteSpecifier.Texture(new("/Textures/Interface/pray.svg.png"));
-                    crypticVerb.Act = () =>
-                    {
-                        _quickDialog.OpenDialog(player, "Subtle Cryptic Message", "Popup Message", "Scale (0.5-3.0)", (string popupMessage, float scale) =>
-                        {
-                            scale = Math.Clamp(scale, 0.5f, 3.0f);
-                            var scaledMessage = $"[scale:{scale:F1}]{popupMessage}";
-                            _prayerSystem.SendCrypticMessage(targetActor.PlayerSession, player, "", scaledMessage == "" ? Loc.GetString("prayer-popup-cryptic-default") : scaledMessage);
-                        });
-                    };
-                    crypticVerb.Impact = LogImpact.Low;
-                    args.Verbs.Add(crypticVerb);
 
                     // Spawn - Like respawn but on the spot.
                     args.Verbs.Add(new Verb()
@@ -165,7 +145,7 @@ namespace Content.Server.Administration.Systems
 
                             var profile = _gameTicker.GetPlayerProfile(targetActor.PlayerSession);
                             var mobUid = _spawning.SpawnPlayerMob(coords.Value, null, profile, stationUid, session: targetActor.PlayerSession); // Frontier: added session
-                            _traits.ApplyProfileTraits(mobUid, profile, targetActor.PlayerSession.Name); // HardLight
+                            _traits.ApplyProfileTraits(mobUid, profile, targetActor.PlayerSession.Name); // hardlight
 
                             if (_mindSystem.TryGetMind(args.Target, out var mindId, out var mindComp))
                                 _mindSystem.TransferTo(mindId, mobUid, true, mind: mindComp);
@@ -192,8 +172,8 @@ namespace Content.Server.Administration.Systems
                             var stationUid = _stations.GetOwningStation(args.Target);
 
                             var profile = _gameTicker.GetPlayerProfile(targetActor.PlayerSession);
-                            var mobUid = _spawning.SpawnPlayerMob(coords.Value, null, profile, stationUid, session: targetActor.PlayerSession); // Frontier: Added session, // HardLight: Added var mobUid =
-                            _traits.ApplyProfileTraits(mobUid, profile, targetActor.PlayerSession.Name); // HardLight
+                            var mobUid = _spawning.SpawnPlayerMob(coords.Value, null, profile, stationUid, session: targetActor.PlayerSession); // Frontier: Added session, // hardlight
+                            _traits.ApplyProfileTraits(mobUid, profile, targetActor.PlayerSession.Name); // hardlight
                         },
                         ConfirmationPopup = true,
                         Impact = LogImpact.High,

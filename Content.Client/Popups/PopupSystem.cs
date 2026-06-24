@@ -4,6 +4,7 @@ using Content.Shared.CCVar;
 using Content.Shared.Chat;
 using Content.Shared.Examine;
 using Content.Shared.GameTicking;
+using Content.Shared.HL.Administration; // hardlight
 using Content.Shared.Popups;
 using JetBrains.Annotations;
 using Robust.Client.Graphics;
@@ -33,14 +34,14 @@ namespace Content.Client.Popups
         [Dependency] private readonly ExamineSystemShared _examine = default!;
         [Dependency] private readonly SharedTransformSystem _transform = default!;
 
-        public IReadOnlyList<WorldPopupLabel> WorldLabels => _orderedWorldLabels; // HardLight: IReadOnlyCollection<IReadOnlyList; _aliveWorldLabels.Values<_orderedWorldLabels
-        public IReadOnlyList<CursorPopupLabel> CursorLabels => _orderedCursorLabels; // HardLight: IReadOnlyCollection<IReadOnlyList; _aliveCursorLabels.Values<_orderedWorldLabels
+        public IReadOnlyList<WorldPopupLabel> WorldLabels => _orderedWorldLabels; // hardlight
+        public IReadOnlyList<CursorPopupLabel> CursorLabels => _orderedCursorLabels; // hardlight
 
         private readonly Dictionary<WorldPopupData, WorldPopupLabel> _aliveWorldLabels = new();
         private readonly Dictionary<CursorPopupData, CursorPopupLabel> _aliveCursorLabels = new();
-        private readonly List<WorldPopupLabel> _orderedWorldLabels = new(); // HardLight
-        private readonly List<CursorPopupLabel> _orderedCursorLabels = new(); // HardLight
-        private ulong _nextPopupSequence; // HardLight: Incrementing sequence to maintain order of popups for stacking.
+        private readonly List<WorldPopupLabel> _orderedWorldLabels = new(); // hardlight
+        private readonly List<CursorPopupLabel> _orderedCursorLabels = new(); // hardlight
+        private ulong _nextPopupSequence; // hardlight
 
         public const float MinimumPopupLifetime = 0.7f;
         public const float MaximumPopupLifetime = 5f;
@@ -53,7 +54,7 @@ namespace Content.Client.Popups
             { PopupType.MediumCaution, "12" },
             { PopupType.Large, "15" },
             { PopupType.LargeCaution, "15" },
-            { PopupType.Cryptic, "15" }
+            { PopupType.Cryptic, "15" } // hardlight
         };
 
         private bool _shouldLogInChat;
@@ -99,7 +100,7 @@ namespace Content.Client.Popups
                 ("count", existingLabel.Repeats));
         }
 
-        private void PopupMessage(string? message, PopupType type, EntityCoordinates coordinates, EntityUid? entity, bool recordReplay)
+        private void PopupMessage(string? message, PopupType type, EntityCoordinates coordinates, EntityUid? entity, bool recordReplay, SubtlePopupStyle? style = null) // hardlight
         {
             if (message == null)
                 return;
@@ -129,7 +130,7 @@ namespace Content.Client.Popups
             }
             // WD EDIT END
 
-            var popupData = new WorldPopupData(message, type, coordinates, entity);
+            var popupData = new WorldPopupData(message, type, coordinates, entity, style);
             if (_aliveWorldLabels.TryGetValue(popupData, out var existingLabel))
             {
                 WrapAndRepeatPopup(existingLabel, popupData.Message);
@@ -140,11 +141,12 @@ namespace Content.Client.Popups
             {
                 Text = message,
                 Type = type,
-                Sequence = ++_nextPopupSequence, // HardLight: Assign sequence for stacking order.
+                Style = style,
+                Sequence = ++_nextPopupSequence, // hardlight
             };
 
             _aliveWorldLabels.Add(popupData, label);
-            _orderedWorldLabels.Add(label); // HardLight
+            _orderedWorldLabels.Add(label); // hardlight
         }
 
         #region Abstract Method Implementations
@@ -190,11 +192,11 @@ namespace Content.Client.Popups
             {
                 Text = message,
                 Type = type,
-                Sequence = ++_nextPopupSequence, // HardLight: Assign sequence for stacking order.
+                Sequence = ++_nextPopupSequence, // hardlight
             };
 
             _aliveCursorLabels.Add(popupData, label);
-            _orderedCursorLabels.Add(label); // HardLight
+            _orderedCursorLabels.Add(label); // hardlight
         }
 
         public override void PopupCursor(string? message, PopupType type = PopupType.Small)
@@ -314,7 +316,7 @@ namespace Content.Client.Popups
 
         private void OnPopupCoordinatesEvent(PopupCoordinatesEvent ev)
         {
-            PopupMessage(ev.Message, ev.Type, GetCoordinates(ev.Coordinates), null, false);
+            PopupMessage(ev.Message, ev.Type, GetCoordinates(ev.Coordinates), null, false, ev.Style);
         }
 
         private void OnPopupEntityEvent(PopupEntityEvent ev)
@@ -337,9 +339,9 @@ namespace Content.Client.Popups
         {
             if (label.Type == PopupType.Cryptic)
             {
-                const float charsPerSecond = 5f;
+                var charsPerSecond = label.Style?.CharactersPerSecond ?? 5f;
                 var timeToDisplay = label.Text.Length / charsPerSecond;
-                return Math.Max(timeToDisplay + 4f, MinimumPopupLifetime);
+                return Math.Max(timeToDisplay + (label.Style?.LingerTime ?? 4f), MinimumPopupLifetime);
             }
 
             return Math.Clamp(PopupLifetimePerCharacter * label.Text.Length,
@@ -365,7 +367,7 @@ namespace Content.Client.Popups
                 }
                 foreach (var data in aliveWorldToRemove)
                 {
-                    if (_aliveWorldLabels.TryGetValue(data, out var label)) // HardLight
+                    if (_aliveWorldLabels.TryGetValue(data, out var label)) // hardlight
                         _orderedWorldLabels.Remove(label);
 
                     _aliveWorldLabels.Remove(data);
@@ -385,7 +387,7 @@ namespace Content.Client.Popups
                 }
                 foreach (var data in aliveCursorToRemove)
                 {
-                    if (_aliveCursorLabels.TryGetValue(data, out var label)) // HardLight
+                    if (_aliveCursorLabels.TryGetValue(data, out var label)) // hardlight
                         _orderedCursorLabels.Remove(label);
 
                     _aliveCursorLabels.Remove(data);
@@ -396,10 +398,11 @@ namespace Content.Client.Popups
         public abstract class PopupLabel
         {
             public PopupType Type = PopupType.Small;
+            public SubtlePopupStyle? Style; // hardlight
             public string Text { get; set; } = string.Empty;
             public float TotalTime { get; set; }
             public int Repeats = 1;
-            public ulong Sequence { get; set; } // HardLight: Added sequence for stacking order.
+            public ulong Sequence { get; set; } // hardlight
         }
 
         public sealed class WorldPopupLabel(EntityCoordinates coordinates) : PopupLabel
@@ -420,7 +423,8 @@ namespace Content.Client.Popups
             string Message,
             PopupType Type,
             EntityCoordinates Coordinates,
-            EntityUid? Entity);
+            EntityUid? Entity,
+            SubtlePopupStyle? Style); // hardlight
 
         [UsedImplicitly]
         private record struct CursorPopupData(

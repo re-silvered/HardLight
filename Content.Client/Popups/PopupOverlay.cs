@@ -16,7 +16,7 @@ namespace Content.Client.Popups;
 /// </summary>
 public sealed class PopupOverlay : Overlay
 {
-    private const float PopupStackSpacing = 14f; // HardLight: Vertical spacing between stacked popups, in pixels.
+    private const float PopupStackSpacing = 14f; // hardlight
 
     private readonly IConfigurationManager _configManager;
     private readonly IEntityManager _entManager;
@@ -27,7 +27,7 @@ public sealed class PopupOverlay : Overlay
     private readonly ExamineSystemShared _examine;
     private readonly SharedTransformSystem _transform;
     private readonly ShaderInstance _shader;
-    private readonly Dictionary<(MapId mapId, EntityUid entity, int x, int y), int> _stackCounts = new(); // HardLight: Tracks how many popups are stacked at each position.
+    private readonly Dictionary<(MapId mapId, EntityUid entity, int x, int y), int> _stackCounts = new(); // hardlight
 
     public override OverlaySpace Space => OverlaySpace.ScreenSpace;
 
@@ -106,7 +106,7 @@ public sealed class PopupOverlay : Overlay
 
             var pos = Vector2.Transform(mapPos.Position, matrix);
 
-            // HardLight start: Calculate stacked position for world popups; prevents overlap when multiple popups spawn at the same position.
+            // hardlight
             var stackEntity = popup.InitialPos.EntityId;
             var stackX = (int) MathF.Round(mapPos.X * 10f);
             var stackY = (int) MathF.Round(mapPos.Y * 10f);
@@ -120,7 +120,7 @@ public sealed class PopupOverlay : Overlay
 
             var stackedPos = pos - new Vector2(0f, stackLevel * PopupStackSpacing * scale);
             _controller.DrawPopup(popup, worldHandle, stackedPos, scale); // pos<stackedPos
-            // HardLight end
+            // hardlight
         }
     }
 }

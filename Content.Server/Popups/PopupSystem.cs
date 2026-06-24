@@ -1,4 +1,5 @@
 using Content.Shared.Popups;
+using Content.Shared.HL.Administration; // hardlight
 using Robust.Server.GameObjects;
 using Robust.Server.Player;
 using Robust.Shared.Configuration;
@@ -68,6 +69,14 @@ namespace Content.Server.Popups
                 return;
 
             RaiseNetworkEvent(new PopupCoordinatesEvent(message, type, GetNetCoordinates(coordinates)), recipient);
+        }
+
+        public void PopupCoordinatesStyled(string? message, EntityCoordinates coordinates, ICommonSession recipient, SubtlePopupStyle style) // hardlight
+        {
+            if (message == null)
+                return;
+
+            RaiseNetworkEvent(new PopupCoordinatesEvent(message, PopupType.Cryptic, GetNetCoordinates(coordinates), style), recipient);
         }
 
         public override void PopupCoordinates(string? message, EntityCoordinates coordinates, EntityUid recipient, PopupType type = PopupType.Small)

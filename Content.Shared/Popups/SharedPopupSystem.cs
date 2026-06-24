@@ -1,6 +1,7 @@
 using Robust.Shared.Map;
 using Robust.Shared.Player;
 using Robust.Shared.Serialization;
+using Content.Shared.HL.Administration; // hardlight
 
 namespace Content.Shared.Popups
 {
@@ -156,10 +157,19 @@ namespace Content.Shared.Popups
 
         public PopupType Type { get; }
 
+        public SubtlePopupStyle? Style { get; } // hardlight
+
         protected PopupEvent(string message, PopupType type)
         {
             Message = message;
             Type = type;
+        }
+
+        protected PopupEvent(string message, PopupType type, SubtlePopupStyle? style) // hardlight
+        {
+            Message = message;
+            Type = type;
+            Style = style;
         }
     }
 
@@ -183,6 +193,11 @@ namespace Content.Shared.Popups
         public NetCoordinates Coordinates { get; }
 
         public PopupCoordinatesEvent(string message, PopupType type, NetCoordinates coordinates) : base(message, type)
+        {
+            Coordinates = coordinates;
+        }
+
+        public PopupCoordinatesEvent(string message, PopupType type, NetCoordinates coordinates, SubtlePopupStyle? style) : base(message, type, style) // hardlight
         {
             Coordinates = coordinates;
         }
@@ -232,6 +247,6 @@ namespace Content.Shared.Popups
         /// <summary>
         ///     Cryptic popups are for admin subtle messages with red text and slow appearance.
         /// </summary>
-        Cryptic
+        Cryptic // hardlight
     }
 }
