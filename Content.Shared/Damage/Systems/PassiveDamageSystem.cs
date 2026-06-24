@@ -1,5 +1,5 @@
 using Content.Shared.Damage.Components;
-using Content.Shared.Mobs;
+using Content.Shared.Mobs; // Hardlight
 using Content.Shared.Mobs.Systems;
 using Content.Shared.Mobs.Components;
 using Content.Shared.FixedPoint;
@@ -23,12 +23,14 @@ public sealed class PassiveDamageSystem : EntitySystem
     {
         component.NextDamage = _timing.CurTime + GetInterval(component);
 
+        // Hardlight start
         foreach (var stack in component.Stacks)
         {
             stack.NextDamage = _timing.CurTime + GetInterval(stack);
         }
 
         component.NextUpdate = GetNextUpdate(component);
+        // Hardlight end
     }
 
     // Every tick, attempt to damage entities
@@ -44,6 +46,7 @@ public sealed class PassiveDamageSystem : EntitySystem
             if (comp.NextUpdate > curTime)
                 continue;
 
+            // Hardlight start
             // Make sure they're up for a damage tick
             if (comp.NextDamage <= curTime)
             {
@@ -70,9 +73,13 @@ public sealed class PassiveDamageSystem : EntitySystem
             }
 
             comp.NextUpdate = GetNextUpdate(comp);
+            // Hardlight end
         }
     }
 
+    /// <summary>
+    /// Hardlight: Checks if the entity is in an allowed state (alive, crit, dead) and applies damage if so.
+    /// </summary>
     private void TryApply(
         EntityUid uid,
         List<MobState> allowedStates,
@@ -97,6 +104,7 @@ public sealed class PassiveDamageSystem : EntitySystem
         return TimeSpan.FromSeconds(Math.Max(0.1f, component.Interval));
     }
 
+    // Hardlight start
     private static TimeSpan GetInterval(PassiveDamageStackEntry entry)
     {
         return TimeSpan.FromSeconds(Math.Max(0.1f, entry.Interval));
@@ -117,4 +125,5 @@ public sealed class PassiveDamageSystem : EntitySystem
 
         return nextUpdate;
     }
+    // Hardlight end
 }

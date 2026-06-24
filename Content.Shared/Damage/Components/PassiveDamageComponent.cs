@@ -38,6 +38,7 @@ public sealed partial class PassiveDamageComponent : Component
     [DataField("nextDamage", customTypeSerializer: typeof(TimeOffsetSerializer)), ViewVariables(VVAccess.ReadWrite)]
     public TimeSpan NextDamage = TimeSpan.Zero;
 
+    // Hardlight start
     [DataField("nextUpdate", customTypeSerializer: typeof(TimeOffsetSerializer)), ViewVariables(VVAccess.ReadWrite)]
     public TimeSpan NextUpdate = TimeSpan.Zero;
 
@@ -63,3 +64,4 @@ public sealed partial class PassiveDamageStackEntry
     [DataField("nextDamage", customTypeSerializer: typeof(TimeOffsetSerializer)), ViewVariables(VVAccess.ReadWrite)]
     public TimeSpan NextDamage = TimeSpan.Zero;
 }
+// Hardlight end

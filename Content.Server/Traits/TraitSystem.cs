@@ -9,9 +9,9 @@ using Content.Shared.Chat;
 using Content.Shared.Database;
 using Content.Shared.Damage.Components;
 using Content.Shared.GameTicking;
-using Content.Shared.Hands.Components;
+using Content.Shared.Hands.Components; // Hardlight
 using Content.Shared.Hands.EntitySystems;
-using Content.Shared.Mobs;
+using Content.Shared.Mobs; // Hardlight
 using Content.Shared.Movement.Systems; // HardLight
 using Content.Shared.Players;
 using Content.Shared.Preferences; // HardLight
@@ -177,7 +177,6 @@ public sealed class TraitSystem : EntitySystem
         // Hardlight start - Add ReplaceComponents
         var components = traitPrototype.Components;
         var tagEntry = components.FirstOrDefault(kv => kv.Value.Component is TagComponent);
-
         if (tagEntry.Value is { } tagEntryValue && tagEntryValue.Component is TagComponent tagEntryComp &&
             EntityManager.TryGetComponent<TagComponent>(uid, out var existingTags))
         {
@@ -225,6 +224,9 @@ public sealed class TraitSystem : EntitySystem
         }
     }
 
+    /// <summary>
+    /// HardLight: If an entity has multiple traits that apply passive damage, we want to stack them instead of overwriting the component and losing the previous trait's damage.
+    /// </summary>
     private ComponentRegistry StackPassiveDamage(EntityUid uid, ComponentRegistry components)
     {
         var componentName = EntityManager.ComponentFactory.GetComponentName<PassiveDamageComponent>();
