@@ -37,4 +37,29 @@ public sealed partial class PassiveDamageComponent : Component
 
     [DataField("nextDamage", customTypeSerializer: typeof(TimeOffsetSerializer)), ViewVariables(VVAccess.ReadWrite)]
     public TimeSpan NextDamage = TimeSpan.Zero;
+
+    [DataField("nextUpdate", customTypeSerializer: typeof(TimeOffsetSerializer)), ViewVariables(VVAccess.ReadWrite)]
+    public TimeSpan NextUpdate = TimeSpan.Zero;
+
+    [DataField, ViewVariables(VVAccess.ReadWrite)]
+    public List<PassiveDamageStackEntry> Stacks = new();
+}
+
+[DataDefinition]
+public sealed partial class PassiveDamageStackEntry
+{
+    [DataField, ViewVariables(VVAccess.ReadWrite)]
+    public List<MobState> AllowedStates = new();
+
+    [DataField, ViewVariables(VVAccess.ReadWrite)]
+    public DamageSpecifier Damage = new();
+
+    [DataField, ViewVariables(VVAccess.ReadWrite)]
+    public float Interval = 1f;
+
+    [DataField, ViewVariables(VVAccess.ReadWrite)]
+    public FixedPoint2 DamageCap = 0;
+
+    [DataField("nextDamage", customTypeSerializer: typeof(TimeOffsetSerializer)), ViewVariables(VVAccess.ReadWrite)]
+    public TimeSpan NextDamage = TimeSpan.Zero;
 }
