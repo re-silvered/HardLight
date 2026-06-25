@@ -34,7 +34,20 @@ namespace Content.Shared.Ghost.Roles
         /// </summary>
         public TimeSpan RaffleEndTime { get; set; }
 
+        // Hardlight start
+        public GhostRoleChoiceInfo[] Choices { get; set; }
+
     }
+
+    [NetSerializable, Serializable]
+    public struct GhostRoleChoiceInfo
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string Rules { get; set; }
+    }
+    // Hardlight end
 
     [NetSerializable, Serializable]
     public sealed class GhostRolesEuiState : EuiStateBase
@@ -51,10 +64,12 @@ namespace Content.Shared.Ghost.Roles
     public sealed class RequestGhostRoleMessage : EuiMessageBase
     {
         public uint Identifier { get; }
+        public string? ChoiceId { get; } // Hardlight
 
-        public RequestGhostRoleMessage(uint identifier)
+        public RequestGhostRoleMessage(uint identifier, string? choiceId = null) // Hardlight -> choiceId
         {
             Identifier = identifier;
+            ChoiceId = choiceId; // Hardlight
         }
     }
 

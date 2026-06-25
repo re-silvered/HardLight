@@ -3,6 +3,7 @@ using Content.Server.Administration.Logs;
 using Content.Server.EUI;
 using Content.Server.Ghost.Roles.Components;
 using Content.Server.Ghost.Roles.Events;
+using Content.Shared._HL.Ghost.Roles.Components; // Hardlight
 using Content.Shared.Ghost.Roles.Raffles;
 using Content.Server.Ghost.Roles.UI;
 using Content.Shared.Administration;
@@ -15,6 +16,10 @@ using Content.Shared.Ghost.Roles;
 using Content.Shared.Mind;
 using Content.Shared.Mind.Components;
 using Content.Shared.Mobs;
+using Content.Shared.NameIdentifier; // Hardlight
+using Content.Shared.NameModifier.EntitySystems; // Hardlight
+using Content.Shared.NPC.Components; // Hardlight
+using Content.Shared.NPC.Systems; // Hardlight
 using Content.Shared.Players;
 using Content.Shared.Roles;
 using JetBrains.Annotations;
@@ -33,6 +38,7 @@ using Content.Shared.Verbs;
 using Robust.Shared.Collections;
 using Content.Shared.Ghost.Roles.Components;
 using Content.Shared.Roles.Jobs;
+using Content.Server.NameIdentifier; // Hardlight
 using Content.Server._NF.Players.GhostRole.Events; // Frontier
 
 namespace Content.Server.Ghost.Roles;
@@ -52,6 +58,9 @@ public sealed class GhostRoleSystem : EntitySystem
     [Dependency] private readonly IGameTiming _timing = default!;
     [Dependency] private readonly PopupSystem _popupSystem = default!;
     [Dependency] private readonly IPrototypeManager _prototype = default!;
+    [Dependency] private readonly NameIdentifierSystem _nameIdentifier = default!; // Hardlight
+    [Dependency] private readonly NameModifierSystem _nameModifier = default!; // Hardlight
+    [Dependency] private readonly NpcFactionSystem _npcFaction = default!; // Hardlight
 
     private uint _nextRoleIdentifier;
     private bool _needsUpdateGhostRoleCount = true;
@@ -250,7 +259,14 @@ public sealed class GhostRoleSystem : EntitySystem
                 raffle.CurrentMembers.AsEnumerable(),
                 session =>
                 {
-                    var success = TryTakeover(session, raffle.Identifier);
+                    // Hardlight start
+                    var choiceId = TryComp(entityUid, out GhostRoleChoiceComponent? choices) &&
+                                   choices.PlayerChoices.TryGetValue(session, out var storedChoice)
+                        ? storedChoice
+                        : null;
+
+                    var success = TryTakeover(session, raffle.Identifier, choiceId);
+                    // Hardlight end
                     foundWinner |= success;
                     return success;
                 }
@@ -267,7 +283,7 @@ public sealed class GhostRoleSystem : EntitySystem
         }
     }
 
-    private bool TryTakeover(ICommonSession player, uint identifier)
+    private bool TryTakeover(ICommonSession player, uint identifier, string? choiceId = null) // Hardlight -> choiceId
     {
         // TODO: the following two checks are kind of redundant since they should already be removed
         //           from the raffle
@@ -279,7 +295,7 @@ public sealed class GhostRoleSystem : EntitySystem
         if (player.AttachedEntity == null || !HasComp<GhostComponent>(player.AttachedEntity))
             return false;
 
-        if (Takeover(player, identifier))
+        if (Takeover(player, identifier, choiceId)) // Hardlight -> choiceId
         {
             // takeover successful, we have a winner! remove the winner from other raffles they might be in
             LeaveAllRaffles(player);
@@ -434,6 +450,14 @@ public sealed class GhostRoleSystem : EntitySystem
         if (!_ghostRoleRaffles.TryGetValue(identifier, out var raffleEnt))
             return;
 
+        // Hardlight start
+        if (_ghostRoles.TryGetValue(identifier, out var roleEnt) &&
+            TryComp(roleEnt, out GhostRoleChoiceComponent? choices))
+        {
+            choices.PlayerChoices.Remove(player);
+        }
+        // Hardlight end
+
         if (raffleEnt.Comp.CurrentMembers.Remove(player))
         {
             UpdateAllEui();
@@ -458,6 +482,14 @@ public sealed class GhostRoleSystem : EntitySystem
             shouldUpdateEui |= raffleEnt.Comp.CurrentMembers.Remove(player);
         }
 
+        // Hardlight start
+        foreach (var roleEnt in _ghostRoles.Values)
+        {
+            if (TryComp(roleEnt, out GhostRoleChoiceComponent? choices))
+                choices.PlayerChoices.Remove(player);
+        }
+        // Hardlight end
+
         if (shouldUpdateEui)
             UpdateAllEui();
     }
@@ -468,9 +500,12 @@ public sealed class GhostRoleSystem : EntitySystem
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="identifier">ID of the ghost role.</param>
-    public void Request(ICommonSession player, uint identifier)
+    public void Request(ICommonSession player, uint identifier, string? choiceId = null) // Hardlight -> choiceId
     {
         if (!_ghostRoles.TryGetValue(identifier, out var roleEnt))
+            return;
+
+        if (!TryPrepareChoice(player, roleEnt, choiceId)) // Hardlight
             return;
 
         if (roleEnt.Comp.RaffleConfig is not null)
@@ -479,7 +514,7 @@ public sealed class GhostRoleSystem : EntitySystem
         }
         else
         {
-            TryTakeover(player, identifier); // DeltaV - prevent taking ghost roles in the lobby
+            TryTakeover(player, identifier, choiceId); // DeltaV - prevent taking ghost roles in the lobby // Hardlight -> choiceId
         }
     }
 
@@ -487,7 +522,7 @@ public sealed class GhostRoleSystem : EntitySystem
     /// Attempts having the player take over the ghost role with the corresponding ID. Does not start a raffle.
     /// </summary>
     /// <returns>True if takeover was successful, otherwise false.</returns>
-    public bool Takeover(ICommonSession player, uint identifier)
+    public bool Takeover(ICommonSession player, uint identifier, string? choiceId = null) // Hardlight -> choiceId
     {
         if (!_ghostRoles.TryGetValue(identifier, out var role))
             return false;
@@ -504,14 +539,19 @@ public sealed class GhostRoleSystem : EntitySystem
         }
         // End Frontier
 
-        var ev = new TakeGhostRoleEvent(player);
+        var ev = new TakeGhostRoleEvent(player, choiceId); // Hardlight -> choiceId
         RaiseLocalEvent(role, ref ev);
 
         if (!ev.TookRole)
             return false;
 
         if (player.AttachedEntity != null)
-            _adminLogger.Add(LogType.GhostRoleTaken, LogImpact.Low, $"{player:player} took the {role.Comp.RoleName:roleName} ghost role {ToPrettyString(player.AttachedEntity.Value):entity}");
+        {
+            // Hardlight start
+            var choiceLog = GetChoiceLogSuffix(role, choiceId);
+            _adminLogger.Add(LogType.GhostRoleTaken, LogImpact.Low, $"{player:player} took the {role.Comp.RoleName:roleName}{choiceLog} ghost role {ToPrettyString(player.AttachedEntity.Value):entity}");
+            // Hardlight end
+        }
 
         CloseEui(player);
         return true;
@@ -631,7 +671,8 @@ public sealed class GhostRoleSystem : EntitySystem
                 Kind = kind,
                 Prototype = role.Prototype, // Frontier
                 RafflePlayerCount = rafflePlayerCount,
-                RaffleEndTime = raffleEndTime
+                RaffleEndTime = raffleEndTime,
+                Choices = GetChoiceInfo(uid) // Hardlight
             });
         }
 
@@ -755,6 +796,8 @@ public sealed class GhostRoleSystem : EntitySystem
         var mob = Spawn(component.Prototype, Transform(uid).Coordinates);
         _transform.AttachToGridOrMap(mob);
 
+        ApplyChoice(uid, mob, ghostRole, args.ChoiceId); // Hardlight
+
         var spawnedEvent = new GhostRoleSpawnerUsedEvent(uid, mob);
         RaiseLocalEvent(mob, spawnedEvent);
 
@@ -804,6 +847,8 @@ public sealed class GhostRoleSystem : EntitySystem
             args.TookRole = false;
             return;
         }
+
+        ApplyChoice(uid, uid, ghostRole, args.ChoiceId); // Hardlight
 
         if (ghostRole.MakeSentient)
             _mindSystem.MakeSentient(uid, ghostRole.AllowMovement, ghostRole.AllowSpeech);
@@ -885,6 +930,100 @@ public sealed class GhostRoleSystem : EntitySystem
 
         SetMode(entity.Owner, ghostRoleProto, ghostRoleProto.Name, entity.Comp);
     }
+
+    // Hardlight start
+    private bool TryPrepareChoice(ICommonSession player, Entity<GhostRoleComponent> roleEnt, string? choiceId)
+    {
+        if (!TryComp(roleEnt, out GhostRoleChoiceComponent? choices))
+            return true;
+
+        if (choiceId == null || !choices.Choices.ContainsKey(choiceId))
+            return false;
+
+        choices.PlayerChoices[player] = choiceId;
+        return true;
+    }
+
+    private GhostRoleChoiceInfo[] GetChoiceInfo(EntityUid uid)
+    {
+        if (!TryComp(uid, out GhostRoleChoiceComponent? choices))
+            return Array.Empty<GhostRoleChoiceInfo>();
+
+        return choices.Choices
+            .Select(choice => new GhostRoleChoiceInfo
+            {
+                Id = choice.Key,
+                Name = Loc.GetString(choice.Value.Name),
+                Description = Loc.GetString(choice.Value.Description),
+                Rules = Loc.GetString(choice.Value.Rules),
+            })
+            .ToArray();
+    }
+
+    private string GetChoiceLogSuffix(EntityUid uid, string? choiceId)
+    {
+        if (choiceId == null ||
+            !TryComp(uid, out GhostRoleChoiceComponent? choices) ||
+            !choices.Choices.TryGetValue(choiceId, out var choice))
+        {
+            return string.Empty;
+        }
+
+        return $" ({Loc.GetString(choice.Name)} choice)";
+    }
+
+    private void ApplyChoice(EntityUid roleUid, EntityUid mob, GhostRoleComponent role, string? choiceId)
+    {
+        if (choiceId == null ||
+            !TryComp(roleUid, out GhostRoleChoiceComponent? choices) ||
+            !choices.Choices.TryGetValue(choiceId, out var choice))
+        {
+            return;
+        }
+
+        role.RoleName = choice.Name;
+        role.RoleDescription = choice.Description;
+        role.RoleRules = choice.Rules;
+
+        if (choice.MindRoles != null)
+            role.MindRoles = choice.MindRoles;
+
+        if (choice.MakeSentient != null)
+            role.MakeSentient = choice.MakeSentient.Value;
+
+        if (choice.AllowMovement != null)
+            role.AllowMovement = choice.AllowMovement.Value;
+
+        if (choice.AllowSpeech != null)
+            role.AllowSpeech = choice.AllowSpeech.Value;
+
+        if (choice.Factions != null)
+        {
+            if (choice.ReplaceFactions)
+                _npcFaction.ClearFactions(mob, false);
+
+            _npcFaction.AddFactions(mob, choice.Factions);
+        }
+
+        if (choice.NameIdentifierGroup != null)
+            ApplyNameIdentifier(mob, choice.NameIdentifierGroup.Value);
+    }
+
+    private void ApplyNameIdentifier(EntityUid mob, ProtoId<NameIdentifierGroupPrototype> groupId)
+    {
+        if (!_prototype.TryIndex(groupId, out var group))
+            return;
+
+        var identifier = EnsureComp<NameIdentifierComponent>(mob);
+        identifier.Group = groupId;
+        identifier.FullIdentifier = _nameIdentifier.GenerateUniqueName(mob, group, out identifier.Identifier);
+        if (!group.FullName)
+            identifier.FullIdentifier = $"({identifier.FullIdentifier})";
+
+        Dirty(mob, identifier);
+        _nameModifier.RefreshNameModifiers(mob);
+    }
+    // Hardlight end
 }
 
 [AnyCommand]

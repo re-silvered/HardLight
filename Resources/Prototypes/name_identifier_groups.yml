@@ -35,6 +35,14 @@
   minValue: 1000
   maxValue: 9999
 
+# Hardlight start
+- type: nameIdentifierGroup
+  id: ColonialCommandChipped
+  prefix: CCC
+  minValue: 1000
+  maxValue: 9999
+# Hardlight end
+
 - type: nameIdentifierGroup
   id: StationAi
   prefix: AI

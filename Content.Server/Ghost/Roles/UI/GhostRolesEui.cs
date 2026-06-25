@@ -25,7 +25,7 @@ namespace Content.Server.Ghost.Roles.UI
             switch (msg)
             {
                 case RequestGhostRoleMessage req:
-                    _ghostRoleSystem.Request(Player, req.Identifier);
+                    _ghostRoleSystem.Request(Player, req.Identifier, req.ChoiceId); // Hardlight -> choiceId
                     break;
                 case FollowGhostRoleMessage req:
                     _ghostRoleSystem.Follow(Player, req.Identifier);

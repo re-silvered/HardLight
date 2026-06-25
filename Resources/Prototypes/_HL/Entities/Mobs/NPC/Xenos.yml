@@ -182,6 +182,27 @@
     rules: ghost-role-information-team-antag-rules
     raffle:
       settings: default
+  - type: GhostRoleChoice
+    choices:
+      hostile:
+        name: ghost-role-information-xeno-choice-hostile-name
+        description: ghost-role-information-xeno-description
+        rules: ghost-role-information-xeno-choice-hostile-rules
+        mindRoles:
+        - MindRoleGhostRoleTeamAntagonist
+        factions:
+        - Xeno
+        replaceFactions: true
+      friendly:
+        name: ghost-role-information-xeno-choice-friendly-name
+        description: ghost-role-information-friendlyxeno-description
+        rules: ghost-role-information-xeno-choice-friendly-rules
+        mindRoles:
+        - MindRoleGhostRoleCrewAligned
+        factions:
+        - PetsNT
+        replaceFactions: true
+        nameIdentifierGroup: ColonialCommandChipped
   - type: GhostTakeoverAvailable
   - type: TypingIndicator
     proto: alien

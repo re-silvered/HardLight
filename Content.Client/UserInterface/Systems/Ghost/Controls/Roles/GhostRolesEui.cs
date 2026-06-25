@@ -30,21 +30,23 @@ namespace Content.Client.UserInterface.Systems.Ghost.Controls.Roles
                     return;
                 }
 
-                _windowRules = new GhostRoleRulesWindow(info.Rules, _ =>
-                {
-                    SendMessage(new RequestGhostRoleMessage(info.Identifier));
+                OpenRulesWindow(info); // Hardlight
 
-                    // if raffle role, close rules window on request, otherwise do
-                    // old behavior of waiting for the server to close it
-                    if (info.Kind != GhostRoleKind.FirstComeFirstServe)
-                        _windowRules?.Close();
-                });
-                _windowRulesId = info.Identifier;
-                _windowRules.OnClose += () =>
-                {
-                    _windowRules = null;
-                };
-                _windowRules.OpenCentered();
+                // _windowRules = new GhostRoleRulesWindow(info.Rules, _ =>
+                // {
+                //     SendMessage(new RequestGhostRoleMessage(info.Identifier));
+
+                //     // if raffle role, close rules window on request, otherwise do
+                //     // old behavior of waiting for the server to close it
+                //     if (info.Kind != GhostRoleKind.FirstComeFirstServe)
+                //         _windowRules?.Close();
+                // });
+                // _windowRulesId = info.Identifier;
+                // _windowRules.OnClose += () =>
+                // {
+                //     _windowRules = null;
+                // };
+                // _windowRules.OpenCentered();
             };
 
             _window.OnRoleFollow += info =>
@@ -57,6 +59,27 @@ namespace Content.Client.UserInterface.Systems.Ghost.Controls.Roles
                 SendMessage(new CloseEuiMessage());
             };
         }
+
+        // Hardlight start
+        private void OpenRulesWindow(GhostRoleInfo info)
+        {
+            _windowRules = new GhostRoleRulesWindow(info.Rules, _ =>
+            {
+                SendMessage(new RequestGhostRoleMessage(info.Identifier, _windowRules?.SelectedChoiceId));
+
+                // if raffle role, close rules window on request, otherwise do
+                // old behavior of waiting for the server to close it
+                if (info.Kind != GhostRoleKind.FirstComeFirstServe)
+                    _windowRules?.Close();
+            }, info.Choices);
+            _windowRulesId = info.Identifier;
+            _windowRules.OnClose += () =>
+            {
+                _windowRules = null;
+            };
+            _windowRules.OpenCentered();
+        }
+        // Hardlight end
 
         public override void Opened()
         {

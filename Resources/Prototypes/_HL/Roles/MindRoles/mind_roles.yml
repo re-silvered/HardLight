@@ -1,0 +1,8 @@
+- type: entity
+  parent: MindRoleGhostRoleNeutral
+  id: MindRoleGhostRoleCrewAligned
+  name: Ghost Role (Crew Aligned)
+  components:
+  - type: MindRole
+    roleType: Neutral
+  - type: HLCrewAlignedGhostRole

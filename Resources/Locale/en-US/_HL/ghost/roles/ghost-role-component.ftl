@@ -2,6 +2,11 @@ ghost-role-information-friendlyxeno-name = Xeno Subject
 ghost-role-information-friendlyxeno-description = You are a friendly xeno, cooperate with the crew, and protect the station.
 ghost-role-information-friendlyxeno-rules = You are a friendly xeno.
 
+ghost-role-information-xeno-choice-hostile-name = Hostile
+ghost-role-information-xeno-choice-friendly-name = Friendly
+ghost-role-information-xeno-choice-hostile-rules = All [color=red]Antagonists[/color] are expected to adhere to the [bold]Antagonist Rules[/bold] and uphold a [italic]higher-standard of roleplay[/italic]. You have chosen the hostile xeno role; once this choice is finalized, you may not become friendly.
+ghost-role-information-xeno-choice-friendly-rules = All [color=green]Crew Aligned[/color] or [color=green]Non-Antagonist[/color] characters are intended to work towards a net positive effect on the round. You have chosen the friendly xeno role; once this choice is finalized, you may not become hostile.
+
 ghost-role-information-rainlizard-name = Rain Lizard
 ghost-role-information-rainlizard-description = You are a Rain Lizard, eat pests and wawas!
 ghost-role-information-rainlizard-rules = You are a free agent, you are free to act as a wild animal would, but don't go out of your way to harm the crew.

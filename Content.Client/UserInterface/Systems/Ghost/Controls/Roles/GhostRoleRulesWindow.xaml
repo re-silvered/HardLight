@@ -1,15 +1,26 @@
 <DefaultWindow xmlns="https://spacestation14.io"
             Title="{Loc 'ghost-roles-window-title'}"
-            MinSize="500 300"
-            SetSize="500 300">
+            MinSize="500 340"
+            SetSize="500 340">
+            <!-- Hardlight 300 -> 340 -->
     <BoxContainer Orientation="Vertical"
                   HorizontalExpand="True">
         <RichTextLabel Name="TopBanner" VerticalExpand="True"/>
+        <!-- Hardlight start -->
+        <BoxContainer Name="ChoiceButtonContainer"
+                      Orientation="Horizontal"
+                      HorizontalAlignment="Center"
+                      SeparationOverride="8"
+                      Margin="0 6 0 8"
+                      Visible="False"/>
+        <!-- Hardlight end -->
         <Button Name="RequestButton"
                 Text="{Loc 'ghost-roles-window-request-role-button'}"
                 Disabled="True"
                 TextAlign="Center"
+                MinSize="120 32"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center" />
+                <!-- Hardlight add MinSize -->
     </BoxContainer>
 </DefaultWindow>
