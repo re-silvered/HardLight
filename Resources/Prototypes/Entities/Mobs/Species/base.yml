@@ -16,6 +16,8 @@
     understands:
     - GalacticCommon
   # Starlight-end
+  - type: MovementSpeedModifier # Hardlight
+    maxSprintSpeed: 6.5
   - type: Wagging # Coyote: Wagging my tail :3
   - type: Sprite
     layers:

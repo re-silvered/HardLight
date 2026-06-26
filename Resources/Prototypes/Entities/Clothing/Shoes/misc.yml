@@ -134,8 +134,8 @@
   - type: ToggleClothing
     action: ActionToggleSpeedBoots
   - type: ClothingSpeedModifier
-    walkModifier: 3 # DeltaV
-    sprintModifier: 3 # DeltaV
+    walkModifier: 1.3 # HardLight: 30% speed boost.
+    sprintModifier: 1.3 # HardLight: 30% speed boost.
   - type: Appearance
   - type: GenericVisualizer
     visuals:

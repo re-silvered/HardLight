@@ -11,7 +11,7 @@ namespace Content.Shared.Movement.Systems
     public sealed class MovementSpeedModifierSystem : EntitySystem
     {
         [Dependency] private readonly IGameTiming _timing = default!;
-        [Dependency] private   readonly IConfigurationManager _configManager = default!;
+        [Dependency] private readonly IConfigurationManager _configManager = default!;
 
         private float _frictionModifier;
         private float _airDamping;
@@ -29,6 +29,8 @@ namespace Content.Shared.Movement.Systems
 
         private void OnModMapInit(Entity<MovementSpeedModifierComponent> ent, ref MapInitEvent args)
         {
+            ApplySprintSpeedCap(ent.Comp); // Hardlight
+
             // TODO: Dirty these smarter.
             ent.Comp.WeightlessAcceleration = ent.Comp.BaseWeightlessAcceleration;
             ent.Comp.WeightlessModifier = ent.Comp.BaseWeightlessModifier;
@@ -88,12 +90,14 @@ namespace Content.Shared.Movement.Systems
             var ev = new RefreshMovementSpeedModifiersEvent();
             RaiseLocalEvent(uid, ev);
 
+            var sprintModifier = GetCappedSprintModifier(move, ev.SprintSpeedModifier); // Hardlight
+
             if (MathHelper.CloseTo(ev.WalkSpeedModifier, move.WalkSpeedModifier) &&
-                MathHelper.CloseTo(ev.SprintSpeedModifier, move.SprintSpeedModifier))
+                MathHelper.CloseTo(sprintModifier, move.SprintSpeedModifier)) // Hardlight ev.SprintSpeedModifier -> sprintModifier
                 return;
 
             move.WalkSpeedModifier = ev.WalkSpeedModifier;
-            move.SprintSpeedModifier = ev.SprintSpeedModifier;
+            move.SprintSpeedModifier = sprintModifier; // Hardlight ev.SprintSpeedModifier -> sprintModifier
             Dirty(uid, move);
         }
 
@@ -103,10 +107,33 @@ namespace Content.Shared.Movement.Systems
                 return;
 
             move.BaseWalkSpeed = baseWalkSpeed;
-            move.BaseSprintSpeed = baseSprintSpeed;
+            move.BaseSprintSpeed = GetCappedSprintSpeed(move, baseSprintSpeed);
             move.Acceleration = acceleration;
             Dirty(uid, move);
         }
+        // Hardlight start
+
+        private static void ApplySprintSpeedCap(MovementSpeedModifierComponent move)
+        {
+            move.BaseSprintSpeed = GetCappedSprintSpeed(move, move.BaseSprintSpeed);
+            move.SprintSpeedModifier = GetCappedSprintModifier(move, move.SprintSpeedModifier);
+        }
+
+        private static float GetCappedSprintSpeed(MovementSpeedModifierComponent move, float sprintSpeed)
+        {
+            return move.MaxSprintSpeed is { } max
+                ? Math.Min(sprintSpeed, max)
+                : sprintSpeed;
+        }
+
+        private static float GetCappedSprintModifier(MovementSpeedModifierComponent move, float sprintModifier)
+        {
+            if (move.MaxSprintSpeed is not { } max || move.BaseSprintSpeed <= 0)
+                return sprintModifier;
+
+            return Math.Min(sprintModifier, max / move.BaseSprintSpeed);
+        }
+        // Hardlight end
 
         public void RefreshFrictionModifiers(EntityUid uid, MovementSpeedModifierComponent? move = null)
         {

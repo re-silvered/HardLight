@@ -188,7 +188,7 @@
     grid:
     - 0,0,19,9 # Frontier: Was 0,0,19,9 - FRONTIER MADE IT 0,0,7,7 AND THAT'S DUMB - Loki
   - type: ClothingSpeedModifier
-    sprintModifier: 0.75 # movespeed nerf in exchange for massive storage
+    sprintModifier: 0.8 # Hardlight -> movespeed nerf in exchange for massive storage
   - type: HeldSpeedModifier
   - type: Clothing # Frontier
     sprite: _NF/Clothing/Back/Satchels/holding.rsi # Frontier

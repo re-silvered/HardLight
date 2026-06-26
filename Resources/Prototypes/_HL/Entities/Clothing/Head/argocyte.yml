@@ -82,8 +82,8 @@
   - type: ExplosionResistance
     damageCoefficient: 1.25
   - type: ClothingSpeedModifier
-    walkModifier: 1.1
-    sprintModifier: 1.1
+    walkModifier: 1.05
+    sprintModifier: 1.05
   - type: Sprite
     sprite: _HL/Clothing/Head/argocytelight.rsi
   - type: Armor

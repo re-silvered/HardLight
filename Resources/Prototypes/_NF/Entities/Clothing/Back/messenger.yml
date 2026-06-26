@@ -640,7 +640,7 @@
     - state: icon-unlit
       shader: unshaded
   - type: ClothingSpeedModifier
-    sprintModifier: 0.75 # movespeed nerf in exchange for massive storage
+    sprintModifier: 0.8 # Hardlight -> movespeed nerf in exchange for massive storage
   - type: HeldSpeedModifier
   - type: Clothing
     sprite: _NF/Clothing/Back/Messenger/holding.rsi

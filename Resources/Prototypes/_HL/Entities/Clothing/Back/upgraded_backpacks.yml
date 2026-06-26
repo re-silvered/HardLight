@@ -94,7 +94,7 @@
     slot: [back]
     default: ClothingBackpackTacticalHolding
   - type: ClothingSpeedModifier
-    sprintModifier: 0.75 # movespeed nerf in exchange for massive storage
+    sprintModifier: 0.8 # movespeed nerf in exchange for massive storage
   - type: HeldSpeedModifier
   - type: UserInterface
     interfaces:

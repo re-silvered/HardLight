@@ -42,6 +42,13 @@ namespace Content.Shared.Movement.Components
         public float BaseSprintSpeed = DefaultBaseSprintSpeed;
 
         /// <summary>
+        /// Hardlight
+        /// Optional absolute cap for sprint speed. Modifiers cannot exceed the configured top speed.
+        /// </summary>
+        [DataField, AutoNetworkedField]
+        public float? MaxSprintSpeed;
+
+        /// <summary>
         /// The acceleration applied to mobs when moving. If this is ever less than Friction the mob will be slower.
         /// </summary>
         [AutoNetworkedField, DataField]
@@ -66,7 +73,9 @@ namespace Content.Shared.Movement.Components
         [ViewVariables]
         public float CurrentWalkSpeed => WalkSpeedModifier * BaseWalkSpeed;
         [ViewVariables]
-        public float CurrentSprintSpeed => SprintSpeedModifier * BaseSprintSpeed;
+        public float CurrentSprintSpeed => MaxSprintSpeed is { } max // Hardlight - max speeds
+            ? Math.Min(SprintSpeedModifier * BaseSprintSpeed, max)
+            : SprintSpeedModifier * BaseSprintSpeed;
 
         /// <summary>
         /// The acceleration applied to mobs when moving. If this is ever less than Friction the mob will be slower.
@@ -119,7 +128,9 @@ namespace Content.Shared.Movement.Components
         [ViewVariables]
         public float WeightlessWalkSpeed => WeightlessModifier * BaseWalkSpeed;
         [ViewVariables]
-        public float WeightlessSprintSpeed => WeightlessModifier * BaseSprintSpeed;
+        public float WeightlessSprintSpeed => MaxSprintSpeed is { } max // Hardlight - max speeds
+            ? Math.Min(WeightlessModifier * BaseSprintSpeed, max)
+            : WeightlessModifier * BaseSprintSpeed;
 
         /// <summary>
         /// The acceleration applied to mobs when moving and weightless.

@@ -36,8 +36,8 @@
         Slash: 1.1
         Blunt: 1.1
   - type: ClothingSpeedModifier
-    walkModifier: 1.2
-    sprintModifier: 1.2
+    walkModifier: 1.15 # Hardlight 20% -> 15% ms increase
+    sprintModifier: 1.15 # Hardlight 20% -> 15% ms increase
   - type: Tag
     tags: [] # ignore "WhitelistChameleon" tag
   - type: Sprite
