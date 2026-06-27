@@ -41,9 +41,12 @@ namespace Content.Shared.Movement.Components
         [DataField, AutoNetworkedField]
         public float BaseSprintSpeed = DefaultBaseSprintSpeed;
 
+
+        // todo: logarithmic scaling speed increases instead mayhaps
         /// <summary>
         /// Hardlight
-        /// Optional absolute cap for sprint speed. Modifiers cannot exceed the configured top speed.
+        /// Absolute cap for sprint speed. Modifiers cannot exceed the configured top speed.
+        /// Optional as not every entity with this component needs a max speed configured.
         /// </summary>
         [DataField, AutoNetworkedField]
         public float? MaxSprintSpeed;
