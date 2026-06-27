@@ -20,7 +20,7 @@ namespace Content.Client.UserInterface.Systems.Ghost.Controls.Roles
         private string _currentRules; // Hardlight
         public string? SelectedChoiceId { get; private set; } // Hardlight
 
-        public GhostRoleRulesWindow(string rules, Action<BaseButton.ButtonEventArgs> requestAction, IReadOnlyList<GhostRoleChoiceInfo>? choices = null)
+        public GhostRoleRulesWindow(string rules, Action<BaseButton.ButtonEventArgs> requestAction, IReadOnlyList<GhostRoleChoiceInfo>? choices = null) // Hardlight: GhostRoleChoiceInfo
         {
             RobustXamlLoader.Load(this);
             var ghostRoleTime = _cfg.GetCVar(CCVars.GhostRoleTime);
@@ -31,6 +31,7 @@ namespace Content.Client.UserInterface.Systems.Ghost.Controls.Roles
             if (ghostRoleTime > 0f)
             {
                 RequestButton.Text = Loc.GetString("ghost-roles-window-request-role-button-timer", ("time", $"{_timer:0.0}"));
+                // TopBanner.SetMessage(FormattedMessage.FromMarkupPermissive(rules + "\n" + Loc.GetString("ghost-roles-window-rules-footer", ("time", ghostRoleTime))));
                 RequestButton.Disabled = true;
             }
 

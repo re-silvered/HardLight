@@ -264,9 +264,10 @@ public sealed class GhostRoleSystem : EntitySystem
                                    choices.PlayerChoices.TryGetValue(session, out var storedChoice)
                         ? storedChoice
                         : null;
-
-                    var success = TryTakeover(session, raffle.Identifier, choiceId);
                     // Hardlight end
+
+                    var success = TryTakeover(session, raffle.Identifier, choiceId); // Hardlight -> choiceId
+
                     foundWinner |= success;
                     return success;
                 }
