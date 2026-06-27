@@ -1,32 +1,31 @@
-using Robust.Shared.Containers;
-using Robust.Shared.Audio;
 using Content.Shared.DoAfter;
-using Robust.Shared.Serialization;
+using Robust.Shared.Audio;
 using Robust.Shared.GameStates;
+using Robust.Shared.Serialization;
 
 namespace Content.Shared.FloofStation;
 
-[RegisterComponent, NetworkedComponent] //HL: Added NetworkedComponent so the client sees this too, it doesn't need any fields.
+[RegisterComponent, NetworkedComponent]
 public sealed partial class VoreComponent : Component
 {
     [DataField]
-    public float Delay = 5f;
+    public string ContainerId = "vore_container";
 
     [DataField]
-    public SoundSpecifier? SoundDevour = new SoundPathSpecifier("/Audio/Floof/Vore/gulp.ogg")
+    public SoundSpecifier SoundDevour = new SoundPathSpecifier("/Audio/Floof/Vore/gulp.ogg")
     {
         Params = AudioParams.Default.WithVolume(-3f),
     };
-    public Container Stomach = default!;
-
-    [DataField]
-    public bool ShowOnExamine = true;
 }
 
 [Serializable, NetSerializable]
-public sealed partial class VoreDoAfterEvent : DoAfterEvent
+public sealed partial class OnVoreDoAfter : SimpleDoAfterEvent
 {
-    public VoreDoAfterEvent(int phase) { }
+    [DataField]
+    public int MaxPrey = 3;
 
-    public override DoAfterEvent Clone() => this;
+    public OnVoreDoAfter(int maxPrey = 3)
+    {
+        MaxPrey = maxPrey;
+    }
 }

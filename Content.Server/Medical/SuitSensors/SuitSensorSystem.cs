@@ -412,7 +412,7 @@ public sealed class SuitSensorSystem : EntitySystem
         if (sensor.Mode == SuitSensorMode.SensorOff
             || sensor.User == null
             || !HasComp<MobStateComponent>(sensor.User) // vored? hide from pesky medics
-            || HasComp<VoredComponent>(sensor.User)) // || transform.GridUid == null
+            || HasComp<DevouredComponent>(sensor.User)) // || transform.GridUid == null
             return null;
         // End Frontier
 

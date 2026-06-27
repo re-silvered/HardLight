@@ -1,11 +1,16 @@
 - type: consentToggle
-  id: Vore
-  name: Vore
-  description: Allow yourself to be devoured by anyone... or anything.
+  id: PreyVore
+  name: Vore Prey
+  description: Allow yourself to be prey or insert yourself into a pred.
 
 - type: consentToggle
-  id: Digestion
-  name: Digestion
+  id: PredVore
+  name: Vore Pred
+  description: Allow yourself to be pred or have prey insert themselves into you.
+
+- type: consentToggle
+  id: Digestable
+  name: Vore Digestable
   description: 'Allow yourself to be digested. WARNING: BEING DIGESTED WILL ROUND-REMOVE YOU.'
 
 # - type: consentToggle

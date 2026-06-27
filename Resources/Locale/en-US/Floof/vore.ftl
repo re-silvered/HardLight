@@ -1,6 +1,15 @@
 verb-categories-vore = Vore
 
 vore-devour = [color=red]Devour[/color]
+vore-insert-self = Insert Self
+vore-insert-other = Insert {CAPITALIZE($entity)}
+vore-release-all = Release all prey
+vore-release-all-finished = You release your prey.
+vore-released-self = You have been released!
+vore-struggle-free = Struggle Free
+vore-struggle-free-self = You struggle free!
+vore-struggle-free-pred = Your prey escaped!
+vore-too-full = You are too full to swallow more prey.
 vore-release = Release {CAPITALIZE($entity)}
 vore-digest = Digest {CAPITALIZE($entity)}
 vore-stop-digest = Stop digesting {CAPITALIZE($entity)}
@@ -34,3 +43,8 @@ vore-digested-prey-7 = [color=red]{CAPITALIZE($entity)} belly kneads on every fi
 vore-digested-prey-8 = [color=red]{CAPITALIZE($entity)} belly churns you down into a hot slush. Your nutrient-rich remains course through their digestive track with a series of long, wet glorps.[/color]
 
 vore-examine = Their belly is larger, you can see {$count} shapes.
+
+vore-digest-stage-1 = You feel your body softening inside the stomach.
+vore-digest-stage-2 = It feels harder to stay conscious as your body melts.
+vore-digest-stage-3 = Your body begins to lose its shape.
+vore-digest-stage-4 = You can barely remain conscious as your body is almost fully gone.
