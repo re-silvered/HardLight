@@ -5,4 +5,3 @@
   components:
   - type: MindRole
     roleType: Neutral
-  - type: HLCrewAlignedGhostRole
