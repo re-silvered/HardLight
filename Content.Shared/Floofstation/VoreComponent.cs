@@ -24,8 +24,12 @@ public sealed partial class OnVoreDoAfter : SimpleDoAfterEvent
     [DataField]
     public int MaxPrey = 3;
 
-    public OnVoreDoAfter(int maxPrey = 3)
+    [DataField]
+    public bool PhaseNom;
+
+    public OnVoreDoAfter(int maxPrey = 3, bool phaseNom = false)
     {
         MaxPrey = maxPrey;
+        PhaseNom = phaseNom;
     }
 }

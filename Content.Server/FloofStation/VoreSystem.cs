@@ -1,6 +1,7 @@
 using Content.Server.Carrying;
 using Content.Server.Body.Components;
 using Content.Server.Medical.SuitSensors;
+using Content.Server._Starlight.NullSpace;
 using Content.Shared._Common.Consent;
 using Content.Shared._Starlight.NullSpace;
 using Content.Shared.Body.Components;
@@ -36,6 +37,8 @@ public sealed class VoreSystem : EntitySystem
     [Dependency] private readonly MobStateSystem _mobState = default!;
     [Dependency] private readonly SharedAudioSystem _audio = default!;
     [Dependency] private readonly SuitSensorSystem _suitSensors = default!;
+    [Dependency] private readonly SharedTransformSystem _transform = default!;
+    [Dependency] private readonly NullSpacePhaseSystem _phase = default!;
 
     public static readonly ProtoId<ConsentTogglePrototype> PredConsent = "PredVore";
     public static readonly ProtoId<ConsentTogglePrototype> PreyConsent = "PreyVore";
@@ -109,10 +112,28 @@ public sealed class VoreSystem : EntitySystem
         if (!_cfg.GetCVar(VoreCVars.VoreEnabled))
             return;
 
+        BuildPhaseNomVerb(args);
+
         if (!args.CanInteract || !args.CanAccess)
             return;
 
         BuildVoreContainerVerbs(uid, comp, args);
+    }
+
+    private void BuildPhaseNomVerb(GetVerbsEvent<Verb> args)
+    {
+        var user = args.User;
+        var target = args.Target;
+
+        if (!IsPhaseNomable(user, target))
+            return;
+
+        args.Verbs.Add(new Verb
+        {
+            Text = Loc.GetString("vore-devour"),
+            Category = VoreVerbCategory.VoreGeneral,
+            Act = () => TryVore(user, target, true)
+        });
     }
 
     private void BuildVoreContainerVerbs(EntityUid uid, VoreComponent comp, GetVerbsEvent<Verb> args)
@@ -142,7 +163,7 @@ public sealed class VoreSystem : EntitySystem
             {
                 Text = Loc.GetString("vore-devour"),
                 Category = VoreVerbCategory.VoreGeneral,
-                Act = () => TryVore(user, target)
+            Act = () => TryVore(user, target)
             });
         }
 
@@ -173,19 +194,25 @@ public sealed class VoreSystem : EntitySystem
         });
     }
 
-    private void TryVore(EntityUid pred, EntityUid prey)
+    private void TryVore(EntityUid pred, EntityUid prey, bool phaseNom = false)
     {
-        var doAfterArgs = new DoAfterArgs(EntityManager, pred, 5f, new OnVoreDoAfter(), pred, target: prey, used: pred)
+        var doAfterArgs = new DoAfterArgs(EntityManager, pred, 5f, new OnVoreDoAfter(phaseNom: phaseNom), pred, target: prey, used: pred)
         {
             BreakOnMove = true,
-            BreakOnDamage = true,
+            BreakOnDamage = !phaseNom,
+            BreakOnWeightlessMove = false,
+            RequireCanInteract = !phaseNom,
         };
 
         if (!_doAfter.TryStartDoAfter(doAfterArgs))
             return;
 
-        _popup.PopupEntity(Loc.GetString("vore-attempt-devour", ("entity", pred), ("prey", prey)), pred, pred);
-        _popup.PopupEntity(Loc.GetString("vore-attempt-devour", ("entity", pred), ("prey", prey)), prey, prey, PopupType.LargeCaution);
+        var popup = phaseNom
+            ? Loc.GetString("vore-attempt-phasenom", ("prey", prey))
+            : Loc.GetString("vore-attempt-devour", ("entity", pred), ("prey", prey));
+
+        _popup.PopupEntity(popup, pred, pred);
+        _popup.PopupEntity(popup, prey, prey, PopupType.LargeCaution);
     }
 
     private void OnVoreDoAfter(EntityUid uid, VoreComponent comp, OnVoreDoAfter args)
@@ -215,6 +242,13 @@ public sealed class VoreSystem : EntitySystem
                 _audio.PlayEntity(comp.SoundDevour, predSession, pred);
             if (_players.TryGetSessionByEntity(prey, out var preySession))
                 _audio.PlayEntity(comp.SoundDevour, preySession, pred);
+        }
+
+        if (args.PhaseNom && HasComp<NullSpaceComponent>(pred))
+        {
+            var (position, rotation) = _transform.GetWorldPositionRotation(prey);
+            _transform.SetWorldPositionRotation(pred, position, rotation);
+            _phase.Phase(pred);
         }
 
         EnsureEntityFree(pred, prey, comp);
@@ -300,6 +334,18 @@ public sealed class VoreSystem : EntitySystem
             return false;
 
         return true;
+    }
+
+    private bool IsPhaseNomable(EntityUid pred, EntityUid prey)
+    {
+        if (!HasComp<NullSpaceComponent>(pred))
+            return false;
+        if (HasComp<NullSpaceComponent>(prey))
+            return false;
+        if (HasComp<DevouredComponent>(pred))
+            return false;
+
+        return IsDevourable(pred, prey);
     }
 
     private bool IsValidVoreInteraction(EntityUid pred, EntityUid prey)
