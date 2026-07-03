@@ -4,7 +4,6 @@ using Content.Server.Administration.Logs;
 using Content.Server.Chat.Systems;
 using Content.Server.Power.Components;
 using Content.Server.Radio.Components;
-using Content.Server.Speech.Components;
 using Content.Shared.Access.Components; // HardLight
 using Content.Shared.Access.Systems; // HardLight
 using Content.Shared._Mono.Company;
@@ -400,9 +399,7 @@ public sealed class RadioSystem : EntitySystem
     public static bool HasXenoglossy(EntityUid uid, IEntityManager entManager)
     {
         return entManager.TryGetComponent<PsionicComponent>(uid, out var psionic)
-                   && psionic.ActivePowers.Any(power => power.ID == "XenoglossyPower")
-               || entManager.HasComponent<ReplacementAccentComponent>(uid)
-                   && entManager.HasComponent<MobStateComponent>(uid);
+                   && psionic.ActivePowers.Any(power => power.ID == "XenoglossyPower");
     }
 
     /// <inheritdoc cref="TelecomServerComponent"/>
